@@ -1,0 +1,10 @@
+*.dvi
+*.toc
+*.log
+*.xml
+*.aux
+*.bcf
+*.run.xml
+*.out
+*/ltximg/
+*/_minted-report/
