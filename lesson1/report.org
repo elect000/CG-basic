@@ -10,7 +10,7 @@
 #+LANGUAGE: en
 #+SELECT_TAGS: export
 #+EXCLUDE_TAGS: noexport
-#+CREATOR: Emacs 24.5.1 (Org mode 9.0.
+#+CREATOR: Emacs 24.5.1 (Org mode 9.1.1)
 #+LATEX_CLASS: koma-article
 #+LATEX_CLASS_OPTIONS: 
 #+LATEX_HEADER_EXTRA: \bibliography{reference}
@@ -33,20 +33,40 @@
 * 課題１
 　　授業用Webページにある、それぞれのサンプルコードを実行し、プログラムコードと実行結果の様子を観察しなさい。
 　サンプルコードについてはこの部分の最後にまとめて記載する。
+ 
  1. ウインドウの表示
     
+    #+ATTR_LATEX: :width 8cm
+       [[./2017-10-03-11.png]]
+
  2. 直線の描画
     
- 3. 三角形の描画
-    
+    #+ATTR_LATEX: :width 8cm
+    [[./2017-10-03-01.png]]
+
+ 3. 三角形の描画    
+
+    #+ATTR_LATEX: :width 8cm
+    [[./2017-10-03-02.png]]
+
  4. 複数の図形の描画
     
+    #+ATTR_LATEX: :width 8cm
+    [[./2017-10-03-03.png]]
+
  5. ループ処理を用いた描画
-    
+
+    #+ATTR_LATEX: :width 8cm
+    [[./2017-10-03-04.png]]
+
  6. 円の描画
+    
+    #+ATTR_LATEX: :width 8cm
+     [[./2017-10-03-05.png]]
 
 ** サンプルコード
     1. ウインドウの表示
+
        #+BEGIN_SRC C++
 #include <GL/glut.h> // ライブラリ用ヘッダファイルの読み込み
 
@@ -71,7 +91,9 @@ int main (int argc, char *argv[]) {
 }
 
        #+END_SRC
+
     2. 直線の描画
+
        #+BEGIN_SRC C++
 #include <GL/glut.h> // ライブラリ用ヘッダファイルの読み込み
 
@@ -100,7 +122,9 @@ int main (int argc, char *argv[]) {
 	return 0;
 }
        #+END_SRC
+
     3. 三角形の描画
+
        #+BEGIN_SRC C++
 #include <GL/glut.h> // ライブラリ用ヘッダファイルの読み込み
 
@@ -129,7 +153,9 @@ int main (int argc, char *argv[]) {
 	return 0;
 }
        #+END_SRC
+
     4. 複数の図形の描画
+
        #+BEGIN_SRC C++
 #include <GL/glut.h> // ライブラリ用ヘッダファイルの読み込み
 
@@ -168,7 +194,9 @@ int main (int argc, char *argv[]) {
 	return 0;
 }
        #+END_SRC
+
     5. ループ処理を用いた描画
+
        #+BEGIN_SRC C++
 #include <GL/glut.h> // ライブラリ用ヘッダファイルの読み込み
 
@@ -198,7 +226,9 @@ int main (int argc, char *argv[]) {
 	return 0;
 }
        #+END_SRC
+
     6. 円の描画
+
        #+BEGIN_SRC C++
 #include <GL/glut.h> // ライブラリ用ヘッダファイルの読み込み
 #include <math.h>
@@ -231,12 +261,19 @@ int main (int argc, char *argv[]) {
 }
        #+END_SRC
   
+
 * 課題2
   下図のように、画面内に縦に5つ、横に５つ、合計25個の三角形を表示するプログラムを作成しなさい。三角形の大きさ、色、配置の間隔は自由に決めてよい。
   
+
+  #+ATTR_LATEX: :width 8cm
+  [[./2017-10-04.png]]
+  
 ** コード
    コードから分かるように、三角形を5つ横に並べたものを次に縦に5行並べていくことで課題を解決している。
-   #+BEGIN_SRC C++
+
+
+#+BEGIN_SRC C++
 #include <GL/glut.h> // ライブラリ用ヘッダファイルの読み込み
 
 // 表示部分をこの関数で記入
@@ -278,15 +315,23 @@ int main (int argc, char *argv[]) {
 	glutMainLoop();                 // イベント待ち
 	return 0;
 }
-   #+END_SRC
+#+END_SRC
+
+
 * 課題3
   オリジナルの２次元図形を画面に表示するプログラムを作成しなさい。ただし、プログラムの中では必ず一度はforループを用いること。
   二種類作成したため、それぞれを紹介する。
 
 ** 円とその塗りつぶしを用いた簡単な絵の描画
    頭と胴と目と口を描画している。
+   
+   #+ATTR_LATEX: :width 8cm
+    [[./2017-10-03-08.png]]
+
+
 *** コード
-    #+BEGIN_SRC C++
+
+#+BEGIN_SRC C++
 #include <GL/glut.h> // ライブラリ用ヘッダファイルの読み込み
 #include <math.h>
 
@@ -356,9 +401,16 @@ int main (int argc, char *argv[]) {
 	return 0;
 }
     #+END_SRC
+
+
 ** サイズの異なる正方形を重ね合わせた図の描画
    広い正方形から色を変えた少し小さな正方形を重ね合わせていく。
+  
+ #+ATTR_LATEX: :width 8cm
+   [[./2017-10-04-01.png
+]]
 *** コード
+
 #+BEGIN_SRC C++
 #include <GL/glut.h> // ライブラリ用ヘッダファイルの読み込み
 #include <math.h>
@@ -405,10 +457,17 @@ int main (int argc, char *argv[]) {
 	return 0;
 }
     #+END_SRC
+
+
 * 発展課題
   「コッホ曲線」について調べ、ステップ3の時点の図形(右図)を描画するプログラムを作成しなさい。
   コッホ曲線の定義をコードにして、繰り返し回数を3にして計算を行い、その結果を線でつないだ。
+  
+#+ATTR_LATEX: :width 8cm
+   [[./2017-10-03-06.png]]
+
 ** コード
+
 #+BEGIN_SRC C++
 #include <GL/glut.h>
 #include <math.h>
@@ -459,5 +518,7 @@ int main (int argc, char *argv[]) {
 	return 0;
 }
 #+END_SRC
+
+
 * 感想
   特に課題に関しての感想はないが、開発環境などの構築に戸惑っている生徒が非常に多かったため、なんらかの救済策があればよいと思いました。
