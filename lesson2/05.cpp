@@ -20,13 +20,21 @@ void display(void){
   glPushMatrix();
   glTranslated(0, 0, 0);
   glRotated(rotateAngle, 0, 0, 1);
-
 //1
   glPushMatrix();
   glColor3d(1.0, 0.0, 0.0);
   glTranslated(0.5, 0, 0);
   glRotated(rotateAngle, 0, 0, 1);
   glCallList(ID_DRAW_STAR);
+  glPopMatrix();
+//0.5 ... small star
+  glPushMatrix();
+  glColor3d(0.0, 0.0, 0.0);
+  glTranslated(0.5, 0, 0);
+  glRotated(rotateAngle * 20, 0, 0, 1);
+  glTranslated(0.4,0,0);
+  glRotated(rotateAngle * 3, 0, 0, 1);
+  glCallList(ID_DRAW_STAR2);
   glPopMatrix();
 //2
 	glPushMatrix();
@@ -74,6 +82,9 @@ void buildDisplayList() {
 
 	//double r0 = 0.15;
 	//double r1 = 0.4;
+  r0 = 0.05;
+  r1 = 0.1;
+  double r2 = 0.2;
 	glBegin(GL_TRIANGLES);
 	for(int i = 0; i < 5; i++) {
 		int deg = i * 72;
@@ -84,14 +95,15 @@ void buildDisplayList() {
 	glEnd();
 
 	glEndList();
+
 }
 
 
-int main (int argc, char *argv[]) { 
+int main (int argc, char *argv[]) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE);
 
-	glutInitWindowSize(400 , 400);
+	glutInitWindowSize(400, 400);
 	glutCreateWindow(argv[0]);
 	glutDisplayFunc(display);
 
