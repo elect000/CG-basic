@@ -31,494 +31,606 @@
   Spacemacs 0.200.9 (Emacs24.5.1)
 
 * 課題１
-　　授業用Webページにある、それぞれのサンプルコードを実行し、プログラムコードと実行結果の様子を観察しなさい。
-　サンプルコードについてはこの部分の最後にまとめて記載する。
+  授業用 Web ページにある、それぞれのサンプルコードを実行し、プログラムコードと実行結果の様子を観察しなさい。プログラムの原理を理解するためには、コード内の数値を変更して結果を確認するとよい。
+  サンプルコードについてはこの部分の最後にまとめて記載する。
  
- 1. ウインドウの表示
-    
-    #+ATTR_LATEX: :width 8cm
-       [[./2017-10-03-11.png]]
+1. 01_triangle_rotation.cpp
 
- 2. 直線の描画
-    
-    #+ATTR_LATEX: :width 8cm
-    [[./2017-10-03-01.png]]
+2. 02_display_list_example.cpp
 
- 3. 三角形の描画    
-
-    #+ATTR_LATEX: :width 8cm
-    [[./2017-10-03-02.png]]
-
- 4. 複数の図形の描画
-    
-    #+ATTR_LATEX: :width 8cm
-    [[./2017-10-03-03.png]]
-
- 5. ループ処理を用いた描画
-
-    #+ATTR_LATEX: :width 8cm
-    [[./2017-10-03-04.png]]
-
- 6. 円の描画
-    
-    #+ATTR_LATEX: :width 8cm
-     [[./2017-10-03-05.png]]
+3. 03_star_rotation.cpp 
 
 ** サンプルコード
-    1. ウインドウの表示
-
-       #+BEGIN_SRC C++
-#include <GL/glut.h> // ライブラリ用ヘッダファイルの読み込み
-
-// 表示部分をこの関数で記入
-void display(void) {        
-	glClearColor (1.0, 1.0, 1.0, 1.0);  // 消去色指定
-	glClear (GL_COLOR_BUFFER_BIT );     // 画面消去
-
-	/* ここに描画に関するプログラムコードを入れる */
-
-	glFlush(); // 画面出力
-}
-
-// メインプログラム
-int main (int argc, char *argv[]) { 
-	glutInit(&argc, argv);          // ライブラリの初期化
-	glutInitWindowSize(400 , 400);  // ウィンドウサイズを指定
-	glutCreateWindow(argv[0]);      // ウィンドウを作成
-	glutDisplayFunc(display);       // 表示関数を指定
-	glutMainLoop();                 // イベント待ち
-	return 0;
-}
-
-       #+END_SRC
-
-    2. 直線の描画
-
-       #+BEGIN_SRC C++
-#include <GL/glut.h> // ライブラリ用ヘッダファイルの読み込み
-
-// 表示部分をこの関数で記入
-void display(void) {        
-	glClearColor (1.0, 1.0, 1.0, 1.0);  // 消去色指定
-	glClear (GL_COLOR_BUFFER_BIT );     // 画面消去
-
-	glColor3d(0.0, 0.0, 1.0);   // 色指定(R,G,B)で0～1まで
-	glBegin(GL_LINE_LOOP);      // 描画するものを指定
-  glVertex2d(-0.9, -0.8); // 頂点位置の指定(1つめ)
-  glVertex2d( 0.9, -0.8); // 頂点位置の指定(2つめ)
-  glVertex2d( 0.0,  0.8); // 頂点位置の指定(3つめ) 
-	glEnd();                               
-
-	glFlush(); // 画面出力
-}
-
-// メインプログラム
-int main (int argc, char *argv[]) { 
-	glutInit(&argc, argv);          // ライブラリの初期化
-	glutInitWindowSize(400 , 400);  // ウィンドウサイズを指定
-	glutCreateWindow(argv[0]);      // ウィンドウを作成
-	glutDisplayFunc(display);       // 表示関数を指定
-	glutMainLoop();                 // イベント待ち
-	return 0;
-}
-       #+END_SRC
-
-    3. 三角形の描画
-
-       #+BEGIN_SRC C++
-#include <GL/glut.h> // ライブラリ用ヘッダファイルの読み込み
-
-// 表示部分をこの関数で記入
-void display(void) {        
-	glClearColor (1.0, 1.0, 1.0, 1.0);  // 消去色指定
-	glClear (GL_COLOR_BUFFER_BIT );     // 画面消去
-
-	glColor3d(0.0, 1.0, 1.0);   // 色指定(R,G,B)で0～1まで
-	glBegin(GL_TRIANGLES);      // 描画するものを指定
-  glVertex2d(-0.9, -0.8); // 頂点位置の指定(1つめ)
-  glVertex2d( 0.9, -0.8); // 頂点位置の指定(2つめ)
-  glVertex2d( 0.0,  0.8); // 頂点位置の指定(3つめ) 
-	glEnd();                               
-
-	glFlush(); // 画面出力
-}
-
-// メインプログラム
-int main (int argc, char *argv[]) { 
-	glutInit(&argc, argv);          // ライブラリの初期化
-	glutInitWindowSize(400 , 400);  // ウィンドウサイズを指定
-	glutCreateWindow(argv[0]);      // ウィンドウを作成
-	glutDisplayFunc(display);       // 表示関数を指定
-	glutMainLoop();                 // イベント待ち
-	return 0;
-}
-       #+END_SRC
-
-    4. 複数の図形の描画
-
-       #+BEGIN_SRC C++
-#include <GL/glut.h> // ライブラリ用ヘッダファイルの読み込み
-
-// 表示部分をこの関数で記入
-void display(void) {        
-	glClearColor (1.0, 1.0, 1.0, 1.0);  // 消去色指定
-	glClear (GL_COLOR_BUFFER_BIT );     // 画面消去
-
-	// 1つ目の図形
-	glColor3d(1.0, 0.5, 0.0);   // 色指定(R,G,B)で0～1まで
-	glBegin(GL_QUADS);     // 描画するものを指定
-        glVertex2d(-0.3,  0.0); // 頂点位置の指定(1つめ)
-        glVertex2d(-0.3, -0.4); // 頂点位置の指定(2つめ)
-        glVertex2d( 0.3, -0.4); // 頂点位置の指定(3つめ) 
-        glVertex2d( 0.3,  0.0); // 頂点位置の指定(4つめ) 
-	glEnd();                               
-
-	// 2つ目の図形
-	glColor3d(0.0, 1.0, 0.0);   // 色指定(R,G,B)で0～1まで
-	glBegin(GL_TRIANGLES);      // 描画するものを指定
-        glVertex2d( 0.0, 0.9); // 頂点位置の指定(1つめ)
-        glVertex2d(-0.7, 0.0); // 頂点位置の指定(2つめ)
-        glVertex2d( 0.7, 0.0); // 頂点位置の指定(3つめ) 
-	glEnd();                               
-
-	glFlush(); // 画面出力
-}
-
-// メインプログラム
-int main (int argc, char *argv[]) { 
-	glutInit(&argc, argv);          // ライブラリの初期化
-	glutInitWindowSize(400 , 400);  // ウィンドウサイズを指定
-	glutCreateWindow(argv[0]);      // ウィンドウを作成
-	glutDisplayFunc(display);       // 表示関数を指定
-	glutMainLoop();                 // イベント待ち
-	return 0;
-}
-       #+END_SRC
-
-    5. ループ処理を用いた描画
-
-       #+BEGIN_SRC C++
-#include <GL/glut.h> // ライブラリ用ヘッダファイルの読み込み
-
-// 表示部分をこの関数で記入
-void display(void) {        
-	glClearColor (1.0, 1.0, 1.0, 1.0);  // 消去色指定
-	glClear (GL_COLOR_BUFFER_BIT );     // 画面消去
-
-	glColor3d(0.0, 0.0, 0.0);   // 色指定(R,G,B)で0～1まで
-	glBegin(GL_LINES);
-	for(int i = 0; i < 10; i++) {
-    glVertex2d(i * 0.1 - 0.5,  0.5); 
-    glVertex2d(i * 0.1 - 0.5, -0.5); 
-	}
-	glEnd();                               
-
-	glFlush(); // 画面出力
-}
-
-// メインプログラム
-int main (int argc, char *argv[]) { 
-	glutInit(&argc, argv);          // ライブラリの初期化
-	glutInitWindowSize(400 , 400);  // ウィンドウサイズを指定
-	glutCreateWindow(argv[0]);      // ウィンドウを作成
-	glutDisplayFunc(display);       // 表示関数を指定
-	glutMainLoop();                 // イベント待ち
-	return 0;
-}
-       #+END_SRC
-
-    6. 円の描画
-
-       #+BEGIN_SRC C++
-#include <GL/glut.h> // ライブラリ用ヘッダファイルの読み込み
+1. 01_triangle_rotation.cpp
+  #+BEGIN_SRC C++
 #include <math.h>
+#include <GL/glut.h>
+
+int rotateAngle;
+
+void display(void) {
+  glClearColor(1.0, 1.0, 1.0, 1.0);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glRotated(rotateAngle, 0, 0, 1);
+
+  glColor3d(1.0, 0.0, 0.0);
+  glBegin(GL_TRIANGLES);
+  glVertex3d(0,     0, 0);
+  glVertex3d(0.5,   0, 0);
+  glVertex3d(0.5, 0.5, 0);
+  glEnd();
+
+  glutSwapBuffers();
+}
+
+void timer(int value){
+  rotateAngle++;
+  glutPostRedisplay();
+  glutTimerFunc(100, timer, 0);
+}
+
+int main(int argc, char *argv[])
+{
+  glutInit(&argc, argv);
+  glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE);
+
+  glutInitWindowSize(400, 400);
+  glutCreateWindow(argv[0]);
+  glutDisplayFunc(display);
+
+  glutTimerFunc(100, timer, 0);
+
+  rotateAngle = 0;
+
+  glutMainLoop();
+  return 0;
+}
+#+END_SRC
+2. 02_display_list_example.cpp
+  #+BEGIN_SRC C++
+#include <math.h>
+#include <GL/glut.h> // ライブラリ用ヘッダファイルの読み込み
+
+// 定数πの定義
+#ifndef M_PI
+#define M_PI 3.14159265358979
+#endif
+
+// ディスプレイリストの学習
+// 星を描画する描画命令一式を、ディスプレイリストとして作成しておき
+// 必要な時に、その命令を呼び出す
+
+#define ID_DRAW_STAR 1 //  glNewList 関数で使用する識別ID。値は何でも構わない
+
 
 // 表示部分をこの関数で記入
 void display(void) {        
 	glClearColor (1.0, 1.0, 1.0, 1.0);  // 消去色指定
-	glClear (GL_COLOR_BUFFER_BIT );     // 画面消去
+	glClear(GL_COLOR_BUFFER_BIT);       // 画面と奥行き情報を初期化
 
-	glColor3d(0.0, 0.0, 0.0);   // 色指定(R,G,B)で0～1まで
-	glBegin(GL_LINE_LOOP);
-	for(int i = 0; i < 360; i++) {
-		double x = cos(i * 3.14159 /180.0);
-		double y = sin(i * 3.14159 /180.0);
-    glVertex2d(x * 0.6, y * 0.6); 
-	}
-	glEnd();                               
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 
-	glFlush(); // 画面出力
+	glColor3d(1.0, 0.0, 0.0);
+	glTranslated(0.5, 0, 0);
+	glCallList(ID_DRAW_STAR);
+	glLoadIdentity();
+
+	glColor3d(0.0, 1.0, 0.0);
+	glTranslated(0, 0.5, 0);
+	glCallList(ID_DRAW_STAR);
+	glLoadIdentity();
+
+	glColor3d(0.0, 0.0, 1.0);
+	glTranslated(-0.5, 0, 0);
+	glCallList(ID_DRAW_STAR);
+
+	glutSwapBuffers(); // バッファの入れ替え
 }
+
+// 一定時間ごとに呼び出される関数
+void timer(int value) {
+
+	glutPostRedisplay(); // 再描画命令
+	glutTimerFunc(100 , timer , 0); // 100ミリ秒後に自身を実行する
+}
+
+// ディスプレイリストを作成する
+void buildDisplayList() {
+	glNewList(ID_DRAW_STAR,GL_COMPILE);
+
+	double r0 = 0.15; // 星の内径
+	double r1 = 0.4; // 星の外径
+	glBegin(GL_TRIANGLES);
+	for(int i = 0; i < 5; i++) { // 5つの三角形で星を表現する
+		int deg = i * 72;
+		glVertex3d(r0 * cos( (deg - 36) * M_PI / 180.0), r0 * sin( (deg - 36) * M_PI / 180.0), 0);  // 内側の頂点
+		glVertex3d(r1 * cos( deg * M_PI / 180.0), r1 * sin( deg * M_PI / 180.0), 0);  // 外側の頂点
+		glVertex3d(r0 * cos( (deg + 36) * M_PI / 180.0), r0 * sin( (deg + 36) * M_PI / 180.0) ,0);  // 内側の頂点
+	}
+	glEnd();               
+
+	glEndList();
+}
+
 
 // メインプログラム
 int main (int argc, char *argv[]) { 
 	glutInit(&argc, argv);          // ライブラリの初期化
+	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE);
+
 	glutInitWindowSize(400 , 400);  // ウィンドウサイズを指定
 	glutCreateWindow(argv[0]);      // ウィンドウを作成
 	glutDisplayFunc(display);       // 表示関数を指定
+
+	glutTimerFunc(100 , timer , 0); // 100ミリ秒後に実行する関数の指定
+
+	buildDisplayList();
+	
+
 	glutMainLoop();                 // イベント待ち
 	return 0;
 }
-       #+END_SRC
-  
+  #+END_SRC
+3. 03_star_rotation.cpp
+   #+BEGIN_SRC C++
+#include <math.h>
+#include <GL/glut.h> // ライブラリ用ヘッダファイルの読み込み
+
+// 定数πの定義
+#ifndef M_PI
+#define M_PI 3.14159265358979
+#endif
+
+// ディスプレイリストの学習
+// 星を描画する描画命令一式を、ディスプレイリストとして作成しておき
+// 必要な時に、その命令を呼び出す
+
+#define ID_DRAW_STAR 1 //  glNewList 関数で使用する識別ID。値は何でも構わない
+
+int rotateAngle; // 回転角度を記録しておく変数
+
+// 表示部分をこの関数で記入
+void display(void) {        
+	glClearColor (1.0, 1.0, 1.0, 1.0);  // 消去色指定
+	glClear(GL_COLOR_BUFFER_BIT);       // 画面と奥行き情報を初期化
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	glPushMatrix();
+	glColor3d(1.0, 0.0, 0.0);
+	glTranslated(0.5, 0, 0);
+	glRotated(rotateAngle, 0, 0, 1);
+	glCallList(ID_DRAW_STAR);
+	glPopMatrix();
+
+	glPushMatrix();
+	glColor3d(0.0, 1.0, 0.0);
+	glTranslated(0, 0.5, 0);
+	glCallList(ID_DRAW_STAR);
+	glPopMatrix();
+
+	glPushMatrix();
+	glColor3d(0.0, 0.0, 1.0);
+	glTranslated(-0.5, 0, 0);
+	glCallList(ID_DRAW_STAR);
+	glPopMatrix();
+
+	glutSwapBuffers(); // バッファの入れ替え
+}
+
+// 一定時間ごとに呼び出される関数
+void timer(int value) {
+	rotateAngle++; // 回転角度の更新
+
+	glutPostRedisplay(); // 再描画命令
+	glutTimerFunc(100 , timer , 0); // 100ミリ秒後に自身を実行する
+}
+
+// ディスプレイリストを作成する
+void buildDisplayList() {
+	glNewList(ID_DRAW_STAR,GL_COMPILE);
+
+	double r0 = 0.15; // 星の内径
+	double r1 = 0.4; // 星の外径
+	glBegin(GL_TRIANGLES);
+	for(int i = 0; i < 5; i++) { // 5つの三角形で星を表現する
+		int deg = i * 72;
+		glVertex3d(r0 * cos( (deg - 36) * M_PI / 180.0), r0 * sin( (deg - 36) * M_PI / 180.0), 0);  // 内側の頂点
+		glVertex3d(r1 * cos( deg * M_PI / 180.0), r1 * sin( deg * M_PI / 180.0), 0);  // 外側の頂点
+		glVertex3d(r0 * cos( (deg + 36) * M_PI / 180.0), r0 * sin( (deg + 36) * M_PI / 180.0) ,0);  // 内側の頂点
+	}
+	glEnd();               
+
+	glEndList();
+}
+
+
+// メインプログラム
+int main (int argc, char *argv[]) { 
+	glutInit(&argc, argv);          // ライブラリの初期化
+	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE);
+
+	glutInitWindowSize(400 , 400);  // ウィンドウサイズを指定
+	glutCreateWindow(argv[0]);      // ウィンドウを作成
+	glutDisplayFunc(display);       // 表示関数を指定
+
+	glutTimerFunc(100 , timer , 0); // 100ミリ秒後に実行する関数の指定
+
+	buildDisplayList();
+	
+	rotateAngle = 0;                // 変数の初期値の設定
+
+	glutMainLoop();                 // イベント待ち
+	return 0;
+}
+   #+END_SRC
 
 * 課題2
-  下図のように、画面内に縦に5つ、横に５つ、合計25個の三角形を表示するプログラムを作成しなさい。三角形の大きさ、色、配置の間隔は自由に決めてよい。
+　03_star_rotation.cpp を実行すると、赤い星だけがその場で回転する。このプログラムコードを改変し、3 つの星すべてが赤い星と同様にそれぞれが回転するようにし、さらに全ての星が原点（画面の中心）のまわりを回るようにしなさい（地球が自転しながら、太陽の周りを回っているイメージ）。
   
-
-  #+ATTR_LATEX: :width 8cm
-  [[./2017-10-04.png]]
   
 ** コード
-   コードから分かるように、三角形を5つ横に並べたものを次に縦に5行並べていくことで課題を解決している。
-
-
 #+BEGIN_SRC C++
-#include <GL/glut.h> // ライブラリ用ヘッダファイルの読み込み
+#include <math.h>
+#include <GL/glut.h>
 
-// 表示部分をこの関数で記入
-void display(void) {        
-  float x = -0.6;
-  float y = 0.6;
-  int xcount = 0;
-  int ycount = 0;
+#ifndef M_PI
+#define M_PI 3.14159265358979
+#endif
 
-  glClearColor (1.0, 1.0, 1.0, 1.0);  // 消去色指定
-	glClear (GL_COLOR_BUFFER_BIT );     // 画面消去
+#define ID_DRAW_STAR 1
+#define ID_DRAW_STAR2 2
 
-//　三角形5つの列を5行出力していく
-  while(ycount < 5) { // 行を出力
-    while (xcount < 5) { // 列を出力
-      glColor3d(0.0, 0.0, 1.0);
-      glBegin(GL_TRIANGLES);
-      glVertex2d( x, y + 0.3); // 頂点位置の指定(1つめ)
-      glVertex2d( x - 0.3, y); // 頂点位置の指定(2つめ)
-      glVertex2d( x, y); // 頂点位置の指定(3つめ)
-      glEnd();
-      x += 0.3;
-      xcount++;
-    }
-    xcount = 0;
-    ycount++;
-    x = -0.6;
-    y -= 0.3;
-  }
-	glFlush(); // 画面出力
+int  rotateAngle;
+
+void display(void){
+  glClearColor (1.0, 1.0, 1.0, 1.0);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  // *
+  glPushMatrix();
+  glTranslated(0, 0, 0);
+  glRotated(rotateAngle, 0, 0, 1);
+
+//1
+  glPushMatrix();
+  glColor3d(1.0, 0.0, 0.0);
+  glTranslated(0.5, 0, 0);
+  glRotated(rotateAngle, 0, 0, 1);
+  glCallList(ID_DRAW_STAR);
+  glPopMatrix();
+//2
+	glPushMatrix();
+	glColor3d(0.0, 1.0, 0.0);
+	glTranslated(0, 0.5, 0);
+  glRotated(rotateAngle, 0, 0, 1);
+  glCallList(ID_DRAW_STAR);
+  glPopMatrix();
+//3
+  glPushMatrix();
+  glColor3d(0.0, 0.0, 1.0);
+  glTranslated(-0.5, 0, 0);
+  glRotated(rotateAngle, 0, 0, 1);
+  glCallList(ID_DRAW_STAR);
+  glPopMatrix();
+
+  glPopMatrix();
+  glutSwapBuffers();
 }
 
-// メインプログラム
+void timer(int value) {
+	rotateAngle++;
+
+	glutPostRedisplay();
+	glutTimerFunc(100, timer, 0);
+}
+
+void buildDisplayList() {
+	glNewList(ID_DRAW_STAR,GL_COMPILE);
+
+	double r0 = 0.15;
+	double r1 = 0.4;
+	glBegin(GL_TRIANGLES);
+	for(int i = 0; i < 5; i++) {
+		int deg = i * 72;
+		glVertex3d(r0 * cos( (deg - 36) * M_PI / 180.0), r0 * sin( (deg - 36) * M_PI / 180.0), 0);
+		glVertex3d(r1 * cos( deg * M_PI / 180.0), r1 * sin( deg * M_PI / 180.0), 0);
+		glVertex3d(r0 * cos( (deg + 36) * M_PI / 180.0), r0 * sin( (deg + 36) * M_PI / 180.0) ,0);
+	}
+	glEnd();
+
+	glEndList();
+
+  glNewList(ID_DRAW_STAR2,GL_COMPILE);
+
+	//double r0 = 0.15;
+	//double r1 = 0.4;
+	glBegin(GL_TRIANGLES);
+	for(int i = 0; i < 5; i++) {
+		int deg = i * 72;
+		glVertex3d(r0 * cos( (deg - 36) * M_PI / 180.0), r0 * sin( (deg - 36) * M_PI / 180.0), 0);
+		glVertex3d(r1 * cos( deg * M_PI / 180.0), r1 * sin( deg * M_PI / 180.0), 0);
+		glVertex3d(r0 * cos( (deg + 36) * M_PI / 180.0), r0 * sin( (deg + 36) * M_PI / 180.0) ,0);
+	}
+	glEnd();
+
+	glEndList();
+}
+
+
 int main (int argc, char *argv[]) { 
-	glutInit(&argc, argv);          // ライブラリの初期化
-	glutInitWindowSize(400 , 400);  // ウィンドウサイズを指定
-	glutCreateWindow(argv[0]);      // ウィンドウを作成
-	glutDisplayFunc(display);       // 表示関数を指定
-	glutMainLoop();                 // イベント待ち
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE);
+
+	glutInitWindowSize(400 , 400);
+	glutCreateWindow(argv[0]);
+	glutDisplayFunc(display);
+
+	glutTimerFunc(100 , timer , 0);
+
+	buildDisplayList();
+
+	rotateAngle = 0;
+
+	glutMainLoop();
 	return 0;
 }
 #+END_SRC
 
 
 * 課題3
-  オリジナルの２次元図形を画面に表示するプログラムを作成しなさい。ただし、プログラムの中では必ず一度はforループを用いること。
-  二種類作成したため、それぞれを紹介する。
-
-** 円とその塗りつぶしを用いた簡単な絵の描画
-   頭と胴と目と口を描画している。
-   
-   #+ATTR_LATEX: :width 8cm
-    [[./2017-10-03-08.png]]
-
-
-*** コード
-
-#+BEGIN_SRC C++
-#include <GL/glut.h> // ライブラリ用ヘッダファイルの読み込み
-#include <math.h>
-
-// 表示部分をこの関数で記入
-void display(void) {        
-	glClearColor (1.0, 1.0, 1.0, 1.0);  // 消去色指定
-	glClear (GL_COLOR_BUFFER_BIT );     // 画面消去
-
-  // 胴の描画
-	glColor3d(0.0, 0.0, 0.0);
-	glBegin(GL_LINE_LOOP);
-	for(int i = 0; i < 360; i++) {
-		double x = cos(i * 3.14159 /180.0);
-		double y = sin(i * 3.14159 /180.0) - 0.5;
-    glVertex2d(x * 0.6, y * 0.6); 
-	}
-	glEnd();
-
-  // 頭の描画
-	glColor3d(0.0, 0.0, 0.0); 
-	glBegin(GL_LINE_LOOP);
-	for(int i = 0; i < 360; i++) {
-		double x = cos(i * 3.14159 /180.0) * 0.5;
-		double y = (sin(i * 3.14159 /180.0) + 2.0) * 0.5;
-    glVertex2d(x * 0.6, y * 0.6); 
-	}
-	glEnd();
-
-  // 目の描画
-  glColor3d(0.0, 0.0, 0.0); 
-	glBegin(GL_POLYGON);
-	for(int i = 0; i < 360; i++) {
-		double x = cos(i * 3.14159 /180.0) * 0.1 + 0.25;
-		double y = sin(i * 3.14159 /180.0) * 0.1 + 1.0;
-    glVertex2d(x * 0.6, y * 0.6); 
-	}
-	glEnd();
-
-  // 目の描画
-  glColor3d(0.0, 0.0, 0.0); 
-	glBegin(GL_POLYGON);
-	for(int i = 0; i < 360; i++) {
-    double x = cos(i * 3.14159 /180.0) * 0.1 - 0.25;
-		double y = sin(i * 3.14159 /180.0) * 0.1 + 1.0;
-    glVertex2d(x * 0.6, y * 0.6); 
-	}
-	glEnd();
-  
-  // 口の描画
-  glColor3d(0.0, 0.0, 0.0); 
-	glBegin(GL_POLYGON); 
-  glVertex2d( 0.0, 0.5);
-  glVertex2d( -0.05, 0.4);
-  glVertex2d( 0.05,  0.4);
-	glEnd();
-
-	glFlush(); // 画面出力
-}
-
-// メインプログラム
-int main (int argc, char *argv[]) { 
-	glutInit(&argc, argv);          // ライブラリの初期化
-	glutInitWindowSize(400 , 400);  // ウィンドウサイズを指定
-	glutCreateWindow(argv[0]);      // ウィンドウを作成
-	glutDisplayFunc(display);       // 表示関数を指定
-	glutMainLoop();                 // イベント待ち
-	return 0;
-}
-    #+END_SRC
-
-
-** サイズの異なる正方形を重ね合わせた図の描画
-   広い正方形から色を変えた少し小さな正方形を重ね合わせていく。
-  
- #+ATTR_LATEX: :width 8cm
-   [[./2017-10-04-01.png
-]]
-*** コード
-
-#+BEGIN_SRC C++
-#include <GL/glut.h> // ライブラリ用ヘッダファイルの読み込み
-#include <math.h>
-
-// 表示部分をこの関数で記入
-void display(void) {
-  float x = 1.0;
-  float y = 1.0;
-  float color = 1.0;
-
-  glClearColor (1.0, 1.0, 1.0, 1.0);  // 消去色指定
-	glClear (GL_COLOR_BUFFER_BIT );     // 画面消去
-
-  for (int i = 0; i < 10; ++i) {
-    // 塗りつぶす色を交互に入れ替える
-    if (i % 2 == 0) {
-      glColor3d(color, color, color);
-    }
-    else {
-      glColor3d(color * 0, color * 0, color * 0);
-    }
-    // 塗り潰す四角形の描画
-    glBegin(GL_QUADS);
-    glVertex2d(x, y);
-    glVertex2d(-1 * x , y);
-    glVertex2d(-1 * x , -1 * y);
-    glVertex2d(x , -1 * y);
-    glEnd();
-    // 正方形のサイズを小さくする。
-    x -= 0.1;
-    y -= 0.1;
-  }
-
-	glFlush(); // 画面出力
-}
-
-// メインプログラム
-int main (int argc, char *argv[]) { 
-	glutInit(&argc, argv);          // ライブラリの初期化
-	glutInitWindowSize(400 , 400);  // ウィンドウサイズを指定
-	glutCreateWindow(argv[0]);      // ウィンドウを作成
-	glutDisplayFunc(display);       // 表示関数を指定
-	glutMainLoop();                 // イベント待ち
-	return 0;
-}
-    #+END_SRC
-
-
-* 発展課題
-  「コッホ曲線」について調べ、ステップ3の時点の図形(右図)を描画するプログラムを作成しなさい。
-  コッホ曲線の定義をコードにして、繰り返し回数を3にして計算を行い、その結果を線でつないだ。
-  
-#+ATTR_LATEX: :width 8cm
-   [[./2017-10-03-06.png]]
+  上記の課題 3 に加え、小さな黒い星が赤い星の周りをクルクル素早く回っている様子を描くようにしなさい（赤い星の図形で示された地球の周りを月が回っているイメージ）。
 
 ** コード
-
 #+BEGIN_SRC C++
-#include <GL/glut.h>
 #include <math.h>
+#include <GL/glut.h>
 
-// 表示部分をこの関数で記入
+#ifndef M_PI
+#define M_PI 3.14159265358979
+#endif
 
-void koch(int level, float p1x, float p1y,  float p2x, float p2y) {
-  if(level == 0) {
-    glColor3d(0.0, 0.0, 1.0);
-    glBegin(GL_LINE_LOOP);
-    glVertex2d(p1x, p1y);
-    glVertex2d(p2x, p2y);
-    glEnd();
-    return;
-  }
-  float sx = (2.0 * p1x + 1.0 * p2x) / 3.0;
-  float sy = (2.0 * p1y + 1.0 * p2y) / 3.0;
-  float tx = (1.0 * p1x + 2.0 * p2x) / 3.0;
-  float ty = (1.0 * p1y + 2.0 * p2y) / 3.0;
-  float ux = (tx - sx) * (1.0 / 2.0) - (ty - sy) * (sqrt(3) / 2.0) + sx;
-  float uy = (tx - sx) * (sqrt(3.0) / 2.0) + (ty - sy) * (1.0 / 2.0) + sy;
+#define ID_DRAW_STAR 1
+#define ID_DRAW_STAR2 2
 
-  koch(level - 1, p1x, p1y, sx, sy);
-  koch(level - 1, sx, sy, ux, uy);
-  koch(level - 1, ux, uy, tx, ty);
-  koch(level - 1, tx, ty, p2x, p2y);
+int  rotateAngle;
+
+void display(void){
+  glClearColor (1.0, 1.0, 1.0, 1.0);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  // *
+  glPushMatrix();
+  glTranslated(0, 0, 0);
+  glRotated(rotateAngle, 0, 0, 1);
+//1
+  glPushMatrix();
+  glColor3d(1.0, 0.0, 0.0);
+  glTranslated(0.5, 0, 0);
+  glRotated(rotateAngle, 0, 0, 1);
+  glCallList(ID_DRAW_STAR);
+  glPopMatrix();
+//0.5 ... small star
+  glPushMatrix();
+  glColor3d(0.0, 0.0, 0.0);
+  glTranslated(0.5, 0, 0);
+  glRotated(rotateAngle * 20, 0, 0, 1);
+  glTranslated(0.4,0,0);
+  glRotated(rotateAngle * 3, 0, 0, 1);
+  glCallList(ID_DRAW_STAR2);
+  glPopMatrix();
+//2
+	glPushMatrix();
+	glColor3d(0.0, 1.0, 0.0);
+	glTranslated(0, 0.5, 0);
+  glRotated(rotateAngle, 0, 0, 1);
+  glCallList(ID_DRAW_STAR);
+  glPopMatrix();
+//3
+  glPushMatrix();
+  glColor3d(0.0, 0.0, 1.0);
+  glTranslated(-0.5, 0, 0);
+  glRotated(rotateAngle, 0, 0, 1);
+  glCallList(ID_DRAW_STAR);
+  glPopMatrix();
+
+  glPopMatrix();
+  glutSwapBuffers();
 }
-void display(void) {
-  glClearColor(1.0, 1.0, 1.0, 1.0);
-	glClear (GL_COLOR_BUFFER_BIT );     // 画面消去
-  koch(3, 0.5 * 1.0, 0.5 * -1.0 * (sqrt(3.0) / 2.0),
-       0.5 * -1.0, 0.5 * -1.0 * (sqrt(3.0) / 2.0));
-  koch(3, -1.0 * 0.5, 0.5 * -1.0 * (sqrt(3.0) / 2.0),
-       0.0 * 0.5, (sqrt(3.0) / 2.0) * 0.5);
-  koch(3, 0.0 * 0.5, 0.5 * (sqrt(3.0) / 2.0),
-       0.5 * 1.0, 0.5 * -1.0 * (sqrt(3.0) / 2.0));
-  
-  glFlush(); // 画面出力
+
+void timer(int value) {
+	rotateAngle++;
+
+	glutPostRedisplay();
+	glutTimerFunc(100, timer, 0);
 }
 
-// メインプログラム
-int main (int argc, char *argv[]) { 
-	glutInit(&argc, argv);          // ライブラリの初期化
-	glutInitWindowSize(400 , 400);  // ウィンドウサイズを指定
-	glutCreateWindow(argv[0]);      // ウィンドウを作成
-	glutDisplayFunc(display);       // 表示関数を指定
-	glutMainLoop();                 // イベント待ち
+void buildDisplayList() {
+	glNewList(ID_DRAW_STAR,GL_COMPILE);
+
+	double r0 = 0.15;
+	double r1 = 0.4;
+	glBegin(GL_TRIANGLES);
+	for(int i = 0; i < 5; i++) {
+		int deg = i * 72;
+		glVertex3d(r0 * cos( (deg - 36) * M_PI / 180.0), r0 * sin( (deg - 36) * M_PI / 180.0), 0);
+		glVertex3d(r1 * cos( deg * M_PI / 180.0), r1 * sin( deg * M_PI / 180.0), 0);
+		glVertex3d(r0 * cos( (deg + 36) * M_PI / 180.0), r0 * sin( (deg + 36) * M_PI / 180.0) ,0);
+	}
+	glEnd();
+
+	glEndList();
+
+  glNewList(ID_DRAW_STAR2,GL_COMPILE);
+
+	//double r0 = 0.15;
+	//double r1 = 0.4;
+  r0 = 0.05;
+  r1 = 0.1;
+  double r2 = 0.2;
+	glBegin(GL_TRIANGLES);
+	for(int i = 0; i < 5; i++) {
+		int deg = i * 72;
+		glVertex3d(r0 * cos( (deg - 36) * M_PI / 180.0), r0 * sin( (deg - 36) * M_PI / 180.0), 0);
+		glVertex3d(r1 * cos( deg * M_PI / 180.0), r1 * sin( deg * M_PI / 180.0), 0);
+		glVertex3d(r0 * cos( (deg + 36) * M_PI / 180.0), r0 * sin( (deg + 36) * M_PI / 180.0) ,0);
+	}
+	glEnd();
+
+	glEndList();
+
+}
+
+
+int main (int argc, char *argv[]) {
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE);
+
+	glutInitWindowSize(400, 400);
+	glutCreateWindow(argv[0]);
+	glutDisplayFunc(display);
+
+	glutTimerFunc(100 , timer , 0);
+
+	buildDisplayList();
+
+	rotateAngle = 0;
+
+	glutMainLoop();
 	return 0;
 }
 #+END_SRC
 
+* 課題4
+　次の条件を満たすような、2 次元図形を画面に表示するプログラムを作成しなさい（できるだけ綺麗な、または楽しい図形を描こう）。
+
+
+** コード 
+#+BEGIN_SRC C++
+#include <math.h>
+#include <GL/glut.h>
+
+#ifndef M_PI
+#define M_PI 3.14159265358979
+#endif
+
+#define ID_DRAW_BALL 1
+#define ID_DRAW_BALL2 2
+#define ID_DRAW_BALL3 3
+#define ID_DRAW_BOX 4
+
+int rotateAngle;
+float r;
+
+void display(void){
+  // init
+  glClearColor (1.0, 1.0, 1.0, 1.0);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+
+  glPushMatrix();
+  glColor3d(1.0, 0.4, 0.4);
+  glRotated(rotateAngle * 20, 0, 0, 1);
+  glTranslated(r, 0, 0);
+  glCallList(ID_DRAW_BALL);
+  glPopMatrix();
+
+  glPushMatrix();
+  glColor3d(0.4, 1.0, 0.4);
+  glRotated(rotateAngle * 20, 0, 0, 1);
+  glTranslated(r/sqrt(2), r/sqrt(2), 0);
+  glCallList(ID_DRAW_BALL2);
+  glPopMatrix();
+
+  glPushMatrix();
+  glColor3d(0.4, 0.4, 1.0);
+  glRotated(rotateAngle * 20, 0, 0, 1);
+  glTranslated(0, r, 0);
+  glCallList(ID_DRAW_BALL3);
+  glPopMatrix();
+
+  glPushMatrix();
+  glColor3d(0.7, 0.7, 0.7);
+  glRotated(rotateAngle * 20, 0, 0, 1);
+  glCallList(ID_DRAW_BOX);
+  glPopMatrix();
+
+  glutSwapBuffers();
+}
+
+void timer(int value) {
+  rotateAngle++;
+  r += 0.01;
+
+  glutPostRedisplay();
+  glutTimerFunc(100, timer, 0);
+}
+
+void buildCircle(float r2) {
+  int i, n = 200;
+  double x, y = 0.5;
+  glBegin(GL_POLYGON);
+  for (i = 0; i < n; ++i) {
+    x =  r2 * cos(2.0 * 3.14 * ((double)i/n));
+    y =  r2 * sin(2.0 * 3.14 * ((double)i/n));
+    glVertex3f(x, y, 0.0);
+  }
+  glEnd();
+
+}
+
+void buildDisplayList() {
+  glNewList(ID_DRAW_BALL, GL_COMPILE);
+  buildCircle(0.1);
+  glEndList();
+
+  glNewList(ID_DRAW_BALL2, GL_COMPILE);
+  buildCircle(0.15);
+  glEndList();
+
+  glNewList(ID_DRAW_BALL3, GL_COMPILE);
+  buildCircle(0.2);
+  glEndList();
+
+  glNewList(ID_DRAW_BOX, GL_COMPILE);
+  glBegin(GL_QUADS);
+  glVertex2d(0.1, 0.1);
+  glVertex2d(0.1, -0.1);
+  glVertex2d(-0.1, -0.1);
+  glVertex2d(-0.1, 0.1);
+  glEnd();
+  glEndList();
+}
+
+int main(int argc, char *argv[]) {
+  glutInit(&argc, argv);
+  glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE);
+
+  glutInitWindowSize(400, 400);
+  glutCreateWindow(argv[0]);
+  glutDisplayFunc(display);
+
+  glutTimerFunc(100, timer, 0);
+
+  buildDisplayList();
+
+  rotateAngle = 0;
+
+  glutMainLoop();
+  return 0;
+}
+#+END_SRC
 
 * 感想
-  特に課題に関しての感想はないが、開発環境などの構築に戸惑っている生徒が非常に多かったため、なんらかの救済策があればよいと思いました。
+　実験の教室の人口密度が適度になっていて良いと思いました
