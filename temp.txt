@@ -1,1 +1,5 @@
+;; defalut
 g++ 09* -lGL -lglut -lm
+
+;; with gflutperspective()
+g++ 01.cpp -lGL -lglut -lGLU
