@@ -88,7 +88,6 @@ public:
 
 // 3つの球体を準備しておく
 Sphere g_Sphere[3];
-
 // 選択状態にある球体のID番号（0,1,2）を保持する。選択状態の球が無ければ-1とする。
 int g_SelectedSphereID = -1;
 
@@ -120,7 +119,7 @@ int pickSphere(int x, int y) {
 	// ★取得した色を見て、どの球体を選択したか判定し、そのIDを return する。
   GLubyte c[3];
   glReadPixels(x,y, 1, 1, GL_RGB,GL_UNSIGNED_BYTE, c);
-  return (c[0] == 3) ? -1 : (int)c[0];
+  return (c[0] == 255) ? -1 : (int)c[0];
 	// return -1; // ★適切な値を返すようにする
 }
 
