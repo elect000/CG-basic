@@ -93,7 +93,7 @@ int pickSphere(int x, int y) {
 		glColor3ub(i, 0, 0);
 		g_Sphere[i].display();
 	}
-  
+
   GLubyte c[num];
   glReadPixels(x,y, 1, 1, GL_RGB,GL_UNSIGNED_BYTE, c);
   return (c[0] == num) ? -1 : (int)c[0];

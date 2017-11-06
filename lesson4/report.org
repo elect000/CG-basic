@@ -1,0 +1,776 @@
+# This is a Bibtex reference
+#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:t arch:headline ^:nil
+#+OPTIONS: author:t broken-links:nil c:nil creator:nil
+#+OPTIONS: d:(not "LOGBOOK") date:nil e:nil email:nil f:t inline:t num:t
+#+OPTIONS: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
+#+OPTIONS: timestamp:nil title:t toc:nil todo:t |:t
+#+TITLE: CG基礎 課題2
+#+DATE: 
+#+AUTHOR: 情報科学類二年 江畑 拓哉(201611350)
+#+LANGUAGE: en
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+#+CREATOR: Emacs 24.5.1 (Org mode 9.1.1)
+#+LATEX_CLASS: koma-article
+#+LATEX_CLASS_OPTIONS: 
+#+LATEX_HEADER_EXTRA: \bibliography{reference}
+#+LaTeX_CLASS_OPTIONS:
+#+DESCRIPTION:
+#+KEYWORDS:
+#+SUBTITLE:
+#+STARTUP: indent overview inlineimages
+
+* 動作環境の説明
+- OS
+  Windows10 Pro 内の Bash on Ubuntu on Windows
+  (4.4.0-43-Microsoft #1-Microsoft Wed Dec 31 14:42:53 PST 2014)
+- コンパイル
+  g++ (Ubuntu 5.4.0-6ubuntu1~16.04.4) 5.4.0 20160609
+  Copyright (C) 2015 Free Software Foundation, Inc.
+- コーディング
+  Spacemacs 0.200.9 (Emacs24.5.1)
+
+
+* 課題1
+  
+** 実行結果
+  #+BEGIN_SRC c++
+~$ g++ vector3d_example.cpp -lGL -lglut -lGLU
+~$ ./a.out
+Vector3d(-1.000000 -2.000000 6.000000)
+Vector3d(0.000000 -1.000000 16.000000)
+ 13.000000
+Vector3d(-0.851202 0.523816 0.032739)
+Vector3d(13.000000 -8.000000 -34.000000)
+~$
+  #+END_SRC
+** コード
+   #+BEGIN_SRC c++
+#include <cstdlib>
+#include <cstdio>
+#include <cmath>
+#include <GL/glut.h>
+
+using namespace std;
+
+// 3次元ベクトルを扱うためのクラス
+class Vector3d {
+public:
+	double x, y, z;
+	Vector3d() { x = y = z = 0; }
+	Vector3d(double _x, double _y, double _z) { x = _x; y = _y; z = _z; }
+	void set(double _x, double _y, double _z) { x = _x; y = _y; z = _z; }
+
+	// 長さを1に正規化する
+	void normalize() {
+		double len = length();
+		x /= len; y /= len; z /= len;
+	}
+
+	// 長さを返す
+	double length() { return sqrt(x * x + y * y + z * z); }
+
+	// s倍する
+	void scale(const double s) { x *= s; y *= s; z *= s; }
+
+	// 加算の定義
+	Vector3d operator+(Vector3d v) { return Vector3d(x + v.x, y + v.y, z + v.z); }
+
+	// 減算の定義
+	// ★加算の定義を参考に、減算のコードを記述してみる
+  Vector3d operator-(Vector3d v) { return Vector3d(x - v.x, y - v.y, z - v.z); }
+
+	// 内積の定義
+	double operator*(Vector3d v) { return x * v.x + y* v.y + z * v.z; }
+
+	// 外積の定義
+	Vector3d operator%(Vector3d v) { return Vector3d(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x); }
+
+	// 代入演算の定義
+	Vector3d& operator=(const Vector3d& v){ x = v.x; y = v.y; z = v.z; return (*this); }
+
+	// 加算代入の定義
+	Vector3d& operator+=(const Vector3d& v) { x += v.x; y += v.y; z += v.z; return (*this); }
+
+	// 減算代入の定義
+	// ★加算代入の定義を参考に、減算代入のコードを記述してみる
+  Vector3d& operator-=(const Vector3d& v) { x -= v.x; y -= v.y; z -= v.z; return (*this); }
+
+	// 値を出力する
+	void print() { printf("Vector3d(%f %f %f)\n", x, y, z); }
+};
+
+// マイナスの符号の付いたベクトルを扱えるようにするための定義 例：b=(-a); のように記述できる
+Vector3d operator-( const Vector3d& v ) { return( Vector3d( -v.x, -v.y, -v.z ) ); }
+
+// ベクトルと実数の積を扱えるようにするための定義 例： c=5*a+2*b; c=b*3; のように記述できる
+Vector3d operator*( const double& k, const Vector3d& v ) { return( Vector3d( k*v.x, k*v.y, k*v.z ) );}
+Vector3d operator*( const Vector3d& v, const double& k ) { return( Vector3d( v.x*k, v.y*k, v.z*k ) );}
+
+// ベクトルを実数で割る操作を扱えるようにするための定義 例： c=a/2.3; のように記述できる
+Vector3d operator/( const Vector3d& v, const double& k ) { return( Vector3d( v.x/k, v.y/k, v.z/k ) );}
+
+
+int main(int argc, char**argv) {
+	// ベクトルの加算の例
+	Vector3d a(2,3,4);
+	Vector3d b(3,5,-2);
+  Vector3d c(2,-1,1);
+  Vector3d d;
+  d = a - b;
+	d.print();
+  d = 3 * a - 2 * b;
+  d.print();
+  double e = a*b;
+  printf("%10f\n",e);
+  d = a%b;
+  d.normalize();
+  d.print();
+  d = (a + 2*b)%c;
+  d.print();
+	// Visual Studio でコンソールがすぐに閉じないようにするためには次のコメントアウトをはずす
+	//system("pause"); 
+	return 0;
+}
+   #+END_SRC
+
+* 課題2
+
+** 実行結果
+
+** コード
+   #+BEGIN_SRC c++
+#include <cstdlib>
+#include <cstdio>
+#include <cmath>
+#include <GL/glut.h>
+
+using namespace std;
+
+// 3次元ベクトルを扱うためのクラス
+class Vector3d {
+public:
+	double x, y, z;
+	Vector3d() { x = y = z = 0; }
+	Vector3d(double _x, double _y, double _z) { x = _x; y = _y; z = _z; }
+	void set(double _x, double _y, double _z) { x = _x; y = _y; z = _z; }
+
+	// 長さを1に正規化する
+	void normalize() {
+		double len = length();
+		x /= len; y /= len; z /= len;
+	}
+
+	// 長さを返す
+	double length() { return sqrt(x * x + y * y + z * z); }
+
+	// s倍する
+	void scale(const double s) { x *= s; y *= s; z *= s; }
+
+	// 加算の定義
+	Vector3d operator+(Vector3d v) { return Vector3d(x + v.x, y + v.y, z + v.z); }
+
+	// 減算の定義
+	// ★加算の定義を参考に、減算のコードを記述してみる
+  Vector3d operator-(Vector3d v) { return Vector3d(x - v.x, y - v.y, z - v.z); }
+
+	// 内積の定義
+	double operator*(Vector3d v) { return x * v.x + y* v.y + z * v.z; }
+
+	// 外積の定義
+	Vector3d operator%(Vector3d v) { return Vector3d(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x); }
+	
+	// 代入演算の定義
+	Vector3d& operator=(const Vector3d& v){ x = v.x; y = v.y; z = v.z; return (*this); }
+
+	// 加算代入の定義
+	Vector3d& operator+=(const Vector3d& v) { x += v.x; y += v.y; z += v.z; return (*this); }
+
+	// 減算代入の定義
+	// ★加算代入の定義を参考に、減算代入のコードを記述してみる
+  Vector3d& operator-=(const Vector3d& v) { x -= v.x; y -= v.y; z -= v.z; return (*this); }
+
+	// 値を出力する
+	void print() { printf("Vector3d(%f %f %f)\n", x, y, z); }
+};
+
+// マイナスの符号の付いたベクトルを扱えるようにするための定義 例：b=(-a); のように記述できる
+Vector3d operator-( const Vector3d& v ) { return( Vector3d( -v.x, -v.y, -v.z ) ); }
+
+// ベクトルと実数の積を扱えるようにするための定義 例： c=5*a+2*b; c=b*3; のように記述できる
+Vector3d operator*( const double& k, const Vector3d& v ) { return( Vector3d( k*v.x, k*v.y, k*v.z ) );}
+Vector3d operator*( const Vector3d& v, const double& k ) { return( Vector3d( v.x*k, v.y*k, v.z*k ) );}
+
+// ベクトルを実数で割る操作を扱えるようにするための定義 例： c=a/2.3; のように記述できる
+Vector3d operator/( const Vector3d& v, const double& k ) { return( Vector3d( v.x/k, v.y/k, v.z/k ) );}
+
+
+// 球体の情報を格納するクラス
+class Sphere {
+public:
+	Vector3d position; // 中心位置
+	float color[3];    // 描画色
+
+	void setColor(float r, float g, float b) {
+		color[0] = r; color[1] = g; color[2] = b;
+	}
+
+	// この球体を描画するメンバ関数
+	void display() { 
+		glPushMatrix(); // 現在のモデル変換行列を退避しておく
+
+		// 座標の平行移動とスケール変換を施して球体を描画する
+		glTranslated(position.x, position.y, position.z);
+		glScaled(2, 2, 2);
+		glutSolidSphere(1.0, 32, 32);
+		
+		glPopMatrix();  // 退避していたモデル変換行列を戻す
+	}
+};
+
+// 3つの球体を準備しておく
+Sphere g_Sphere[3];
+// 選択状態にある球体のID番号（0,1,2）を保持する。選択状態の球が無ければ-1とする。
+int g_SelectedSphereID = -1;
+
+// クリックされた3次元座標を保持する
+Vector3d g_SelectedPos;
+
+// ウィンドウサイズを保持する
+int g_WindowWidth = 512;
+int g_WindowHeight = 512;
+
+// 選択した球体のID番号（0,1,2）を返す
+// 選択した球体が無い場合は -1 を返す
+int pickSphere(int x, int y) {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+
+	// 照明効果を無くして単色で描画する
+	glDisable(GL_LIGHTING);
+
+	// 3つの球体を描画する
+	for (int i = 0; i < 3; i++) {
+		// RGBのR成分に球体のIDを設定する(unsigned byte型)
+		glColor3ub(i, 0, 0);
+		g_Sphere[i].display();
+	}
+
+	// ★授業スライドを参考に次のようなプログラムコードを追加する
+	// ★glReadPixels 関数をつかって、クリックした位置が何色であるか取得する
+	// ★取得した色を見て、どの球体を選択したか判定し、そのIDを return する。
+  GLubyte c[3];
+  glReadPixels(x,y, 1, 1, GL_RGB,GL_UNSIGNED_BYTE, c);
+  return (c[0] == 255) ? -1 : (int)c[0];
+	// return -1; // ★適切な値を返すようにする
+}
+
+// 描画関数
+void display() {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LIGHTING);
+
+	// 透視投影変換行列の設定
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(30.0, g_WindowWidth / (float)g_WindowHeight, 1.0, 100.0);
+
+	// カメラビュー座標への変換行列の設定
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	gluLookAt(0, 0, 30, 0, 0, 0, 0, 1, 0);
+
+	// 3つの球体を描画
+	for (int i = 0; i < 3; i++) {
+		// 球体ごとに色を変更する
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, g_Sphere[i].color);
+
+		// 球体の描画を行う
+		g_Sphere[i].display();
+	}
+
+	// 球が選択されている状態であれば、クリック座標に関する情報を表示する
+	if(g_SelectedSphereID != -1) {
+		// 照明効果なしで単色描画
+		glDisable(GL_LIGHTING);
+		glDisable(GL_DEPTH_TEST);
+
+		// クリック座標に点を描画
+		glColor3f(1, 0, 0);
+		glPointSize(5.f);
+		glBegin(GL_POINTS);
+		glVertex3d(g_SelectedPos.x, g_SelectedPos.y, g_SelectedPos.z);
+		glEnd();
+
+		// 文字を描画する位置の指定
+		glRasterPos3d(g_SelectedPos.x, g_SelectedPos.y, g_SelectedPos.z);
+
+		// 表示する文字列の構築
+		// ※もし sprintf_s でコンパイルエラーになる場合は sprintf を使うこと
+		char str[256];
+		sprintf(str, "sphere[%d] (%lf, %lf, %lf)", g_SelectedSphereID,
+				g_SelectedPos.x, g_SelectedPos.y, g_SelectedPos.z);
+
+		// 文字列を1文字ずつ描画
+		for (int i = 0; str[i] != '\0'; i++) {
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, str[i]);
+		}
+	}
+
+	glutSwapBuffers();
+}
+
+// ウィンドウのサイズが変更されたときの処理
+void resize(int w, int h) {
+	if (h < 1) return;
+
+	glViewport(0, 0, w, h);
+
+	g_WindowWidth = w;
+	g_WindowHeight = h;
+}
+
+// マウスカーソル位置に基づく選択処理
+void MousePick(int x, int _y) {
+
+	printf("MousePick(%d, %d)\n", x, _y);
+
+	// マウスクリックで得られる座標は左下原点なので OpenGLの座標系と合わせるためにy座標を反転する
+	const int y = g_WindowHeight - _y;
+
+	g_SelectedSphereID = pickSphere(x, y);
+
+	// 球が選択されていないなら何もしない
+	if (g_SelectedSphereID == -1) return;
+
+	// クリックした場所の座標値（3次元座標）を取得する
+	// ★授業スライドを参考に次のようなプログラムコードを追加する
+	// ★現在のモデルビュー行列を取得する
+	// ★現在の透視投影行列の取得を取得する
+	// ★現在のビューポートの情報を取得
+	// ★マウスクリックした位置の奥行き情報（z値）を取得する
+	// ★上記の情報に基づいて、クリックした位置のワールド座標を取得する
+	// ★取得した値は、g_SelectedPos に格納しておく（←表示の時に使用する）
+  double M[16];
+  glGetDoublev(GL_MODELVIEW_MATRIX, M);
+  double P[16];
+  glGetDoublev(GL_PROJECTION_MATRIX, P);
+  int V[4];
+  glGetIntegerv(GL_VIEWPORT, V);
+  float z;
+  glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
+  double objX, objY, objZ;
+  gluUnProject(x, y, z, M, P, V, &objX, &objY, &objZ);
+
+  g_SelectedPos = Vector3d(objX, objY, objZ);
+}
+
+// マウスクリックのイベント処理
+void mouse(int button, int state, int x, int y) {
+	if (state == GLUT_DOWN) MousePick(x, y); 
+	glutPostRedisplay();
+}
+
+// マウスドラッグのイベント処理
+void motion(int x, int y) {
+	MousePick(x, y);
+	glutPostRedisplay();
+}
+
+// キーが押されたときのイベント処理
+void keyboard(unsigned char key, int x, int y) {
+	switch (key) {
+	case 'q':
+	case 'Q':
+	case '\033':
+		exit(0);  /* '\033' は ESC の ASCII コード */
+	default:
+		break;
+	}
+
+	glutPostRedisplay();
+}
+
+
+void init() {
+	// 3つの球体の位置と色を設定しておく
+	g_Sphere[0].position.set(-5, 0, 0);
+	g_Sphere[1].position.set( 0, 0, 0);
+	g_Sphere[2].position.set( 5, 0, 0);
+	g_Sphere[0].setColor(1, 0, 0);
+	g_Sphere[1].setColor(0, 1, 0);
+	g_Sphere[2].setColor(0, 0, 1);
+
+	glClearDepth(1000.0);
+	glClearColor(1, 1, 1, 1); // 背景の色を白に設定
+
+	// 照明の設定
+	float lightAmbientColor[] = { 0.2f, 0.2f, 0.2f, 0.0f };
+	float lightDiffuseColor[] = { 1.f, 1.f, 1.f, 0.0f };
+	float lightSpecularColor[] = { 0.4f, 0.4f, 0.4f, 0.0f };
+	float lightPosition[] = { 0.0f, 30.0f, 30.0f, 0.0f };
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbientColor);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuseColor);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecularColor);
+	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+
+	// 材質の設定
+	float specularColor[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+	float ambientColor[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+	float diffuseColor[] = { 1.f, 0.f, 0.f, 1.f };
+	float shininess = 64.f;
+	glMaterialfv(GL_FRONT, GL_SPECULAR, specularColor);
+	glMaterialfv(GL_FRONT, GL_SHININESS, &shininess);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, ambientColor);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor);
+}
+
+int main(int argc, char**argv) {
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+	glutInitWindowSize(g_WindowWidth, g_WindowHeight);
+	glutCreateWindow("Mouse Picking");
+
+	glutDisplayFunc(display);
+	glutReshapeFunc(resize);
+	glutMouseFunc(mouse);
+	glutMotionFunc(motion);
+	glutKeyboardFunc(keyboard);
+
+	init();
+
+	glutMainLoop();
+
+	return 0;
+}
+
+   #+END_SRC
+
+* 課題3
+  簡単な的当てゲームを作成しました。すべてのレベルをクリアすると合計タイムが表示されます。
+** 実行結果
+
+** コード
+   #+BEGIN_SRC c++
+#include <cstdlib>
+#include <cstdio>
+#include <cmath>
+#include <GL/glut.h>
+
+using namespace std;
+
+class Vector3d {
+public:
+	double x, y, z;
+
+	Vector3d() { x = y = z = 0; }
+	Vector3d(double _x, double _y, double _z) { x = _x; y = _y; z = _z; }
+
+	void set(double _x, double _y, double _z) { x = _x; y = _y; z = _z; }
+
+	void normalize() {
+		double len = length();
+		x /= len; y /= len; z /= len;
+	}
+
+	double length() { return sqrt(x * x + y * y + z * z); }
+
+	void scale(const double s) { x *= s; y *= s; z *= s; }
+
+	Vector3d operator+(Vector3d v) { return Vector3d(x + v.x, y + v.y, z + v.z); }
+
+  Vector3d operator-(Vector3d v) { return Vector3d(x - v.x, y - v.y, z - v.z); }
+
+	double operator*(Vector3d v) { return x * v.x + y* v.y + z * v.z; }
+
+	Vector3d operator%(Vector3d v) { return Vector3d(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x); }
+	
+	Vector3d& operator=(const Vector3d& v){ x = v.x; y = v.y; z = v.z; return (*this); }
+
+	Vector3d& operator+=(const Vector3d& v) { x += v.x; y += v.y; z += v.z; return (*this); }
+
+  Vector3d& operator-=(const Vector3d& v) { x -= v.x; y -= v.y; z -= v.z; return (*this); }
+
+	void print() { printf("Vector3d(%f %f %f)\n", x, y, z); }
+};
+
+Vector3d operator-( const Vector3d& v ) { return( Vector3d( -v.x, -v.y, -v.z ) ); }
+
+Vector3d operator*( const double& k, const Vector3d& v ) { return( Vector3d( k*v.x, k*v.y, k*v.z ) );}
+
+Vector3d operator*( const Vector3d& v, const double& k ) { return( Vector3d( v.x*k, v.y*k, v.z*k ) );}
+
+Vector3d operator/( const Vector3d& v, const double& k ) { return( Vector3d( v.x/k, v.y/k, v.z/k ) );}
+
+class Sphere {
+public:
+	Vector3d position;
+	float color[3];
+  bool visible = true;
+
+	void setColor(float r, float g, float b) {
+		color[0] = r; color[1] = g; color[2] = b;
+	}
+
+	void display() {
+		glPushMatrix();
+
+		glTranslated(position.x, position.y, position.z);
+		glScaled(2, 2, 2);
+		glutSolidSphere(0.3, 32, 32);
+    glPopMatrix();
+	}
+};
+
+Sphere g_Sphere[20];
+int g_SelectedSphereID = -1;
+
+Vector3d g_SelectedPos;
+
+int g_WindowWidth = 512;
+int g_WindowHeight = 512;
+
+int level = 1;
+int num = 3;
+int iList[20] = {0};
+float timecount = 0;
+
+void initIntList(int iList[]) {
+  srand(9 + level);
+  int x;
+  int y;
+  for (int i = 0; i < num ; i++) {
+    x = rand() % 10 * 10;
+    y = rand() % 10;
+    for (int j = 0; j < i; j++) {
+      if (x + y == iList[j]) {
+        x = rand() % 10 * 10;
+        y = rand() % 10;
+        j = -1;
+      }
+    }
+    iList[i] = x + y;
+  }
+}
+
+int pickSphere(int x, int y) {
+  glClearColor(1,1,1,1); 
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+
+	glDisable(GL_LIGHTING);
+
+	for (int i = 0; i < num; i++) {
+		glColor3ub(i, 0, 0);
+		g_Sphere[i].display();
+	}
+
+	GLubyte c[num];
+  glReadPixels(x,y, 1, 1, GL_RGB,GL_UNSIGNED_BYTE, c);
+  return (c[0] == 255) ? -1 : (int)c[0];
+}
+
+void display() {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LIGHTING);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(30.0, g_WindowWidth / (float)g_WindowHeight, 1.0, 100.0);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	gluLookAt(0, 0, 30, 0, 0, 0, 0, 1, 0);
+
+  bool clear = false;
+  for (int i = 0; i < num; ++i) {
+    if (g_Sphere[i].visible) clear = true;
+  }
+
+  if (!clear && num < 20) {
+    num++;
+    level++;
+    srand(9 + level);
+    initIntList(iList);
+    for (int i = 0; i < num; ++i) {
+      g_Sphere[i].position.set(iList[i] / 10 - 5, iList[i] % 10 - 5, 0);
+      g_Sphere[i].setColor(
+                           (i + 10) * 60 / 100,
+                           (float)(rand() % 100) / 100,
+                           (float)(rand() % 100) / 100);
+      g_Sphere[i].visible = true;
+    }
+    g_SelectedSphereID = -1;
+  }
+
+  if (num >= 20) {
+    glRasterPos3d(-1, 0, 0);
+    char str[256];
+    sprintf(str, "Clear: time %.1f", timecount);
+    for (int i = 0; str[i] != '\0'; i++) {
+      glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, str[i]);
+    }
+
+    glutSwapBuffers();
+    return;
+  }
+
+	for (int i = 0; i < num ; i++) {
+    if (g_Sphere[i].visible) {
+      glMaterialfv(GL_FRONT, GL_DIFFUSE, g_Sphere[i].color);
+      g_Sphere[i].display();
+    }
+	}
+
+	if(g_SelectedSphereID != -1) {
+    g_Sphere[g_SelectedSphereID].visible = false;
+    glDisable(GL_LIGHTING);
+		glDisable(GL_DEPTH_TEST);
+
+		glColor3f(1, 0, 0);
+		glPointSize(5.f);
+		glBegin(GL_POINTS);
+		glVertex3d(g_SelectedPos.x, g_SelectedPos.y, g_SelectedPos.z);
+		glEnd();
+
+		glRasterPos3d(g_SelectedPos.x, g_SelectedPos.y, g_SelectedPos.z);
+    char str[256];
+		sprintf(str, "HIT!");
+		for (int i = 0; str[i] != '\0'; i++) {
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, str[i]);
+		}
+	}
+
+  glRasterPos3d(4, -6, 0);
+  char str[256];
+  sprintf(str, "Level: %d", level);
+  for (int i = 0; str[i] != '\0'; i++) {
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, str[i]);
+  }
+
+	glutSwapBuffers();
+}
+
+void resize(int w, int h) {
+	if (h < 1) return;
+
+	glViewport(0, 0, w, h);
+
+	g_WindowWidth = w;
+	g_WindowHeight = h;
+}
+
+void MousePick(int x, int _y) {
+
+	printf("MousePick(%d, %d)\n", x, _y);
+
+	const int y = g_WindowHeight - _y;
+
+	g_SelectedSphereID = pickSphere(x, y);
+
+	if (g_SelectedSphereID == -1) return;
+
+  double M[16];
+  glGetDoublev(GL_MODELVIEW_MATRIX, M);
+  double P[16];
+  glGetDoublev(GL_PROJECTION_MATRIX, P);
+  int V[4];
+  glGetIntegerv(GL_VIEWPORT, V);
+  float z;
+  glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
+  double objX, objY, objZ;
+  gluUnProject(x, y, z, M, P, V, &objX, &objY, &objZ);
+
+  g_SelectedPos = Vector3d(objX, objY, objZ);
+}
+
+void mouse(int button, int state, int x, int y) {
+	if (state == GLUT_DOWN) MousePick(x, y); 
+	glutPostRedisplay();
+}
+
+void motion(int x, int y) {
+	MousePick(x, y);
+	glutPostRedisplay();
+}
+
+void keyboard(unsigned char key, int x, int y) {
+	switch (key) {
+	case 'q':
+	case 'Q':
+	case '\033':
+		exit(0); 
+	default:
+		break;
+	}
+
+	glutPostRedisplay();
+}
+
+
+void init() {
+  srand(10);
+  initIntList(iList);
+  for (int i = 0; i < num; ++i) {
+    g_Sphere[i].position.set(iList[i] / 10 - 5, iList[i] % 10 - 5, 0);
+    g_Sphere[i].setColor(
+                         (i + 10)* 60 / 100,
+                         (float)(rand() % 100) / 100,
+                         (float)(rand() % 100) / 100);
+  }
+
+	glClearDepth(1000.0);
+	glClearColor(1, 1, 1, 1);
+
+	float lightAmbientColor[] = { 0.2f, 0.2f, 0.2f, 0.0f };
+	float lightDiffuseColor[] = { 1.f, 1.f, 1.f, 0.0f };
+	float lightSpecularColor[] = { 0.4f, 0.4f, 0.4f, 0.0f };
+	float lightPosition[] = { 0.0f, 30.0f, 30.0f, 0.0f };
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbientColor);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuseColor);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecularColor);
+	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+
+	float specularColor[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+	float ambientColor[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+	float diffuseColor[] = { 1.f, 0.f, 0.f, 1.f };
+	float shininess = 64.f;
+	glMaterialfv(GL_FRONT, GL_SPECULAR, specularColor);
+	glMaterialfv(GL_FRONT, GL_SHININESS, &shininess);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, ambientColor);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor);
+}
+
+void timer(int value) {
+  timecount += 0.5;
+	glutTimerFunc(500 , timer , 0);
+}
+
+int main(int argc, char**argv) {
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+	glutInitWindowSize(g_WindowWidth, g_WindowHeight);
+	glutCreateWindow("Cheap Shooting");
+
+	glutDisplayFunc(display);
+	glutReshapeFunc(resize);
+	glutMouseFunc(mouse);
+	glutMotionFunc(motion);
+	glutKeyboardFunc(keyboard);
+
+	init();
+
+  glutTimerFunc(500 , timer , 0);
+	glutMainLoop();
+
+	return 0;
+}
+   #+END_SRC
