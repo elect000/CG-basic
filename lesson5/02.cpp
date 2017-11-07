@@ -122,7 +122,7 @@ void display(void) {
   glColor3d(0.0, 1.0, 1.0);
 	glLineWidth(1);
   
-  if (g_ControlPoints.size() >= 4) {
+  if (g_ControlPoints.size() >= n + 1) {
     for (int k = 0; k < count; ++k) {
       for (float t = 0.0f; t <= 1.001f; t += 0.01f) {
         sum = Vector2d(0, 0);
