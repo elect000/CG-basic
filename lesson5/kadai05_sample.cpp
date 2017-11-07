@@ -62,6 +62,14 @@ Vector2d operator/( const Vector2d& v, const double& k ) { return( Vector2d( v.x
 
 std::vector<Vector2d> g_ControlPoints; // 制御点を格納する
 
+int Fact (int n)
+{
+  int r = 1;
+  for (int i=2; i<=n; i++)
+    r *= i;
+  return r;
+}
+
 // 表示部分をこの関数で記入
 void display(void) {        
 	glClearColor (1.0, 1.0, 1.0, 1.0);  // 消去色指定
@@ -84,6 +92,32 @@ void display(void) {
 		glVertex2d(g_ControlPoints[i].x, g_ControlPoints[i].y);
 	}
 	glEnd();
+
+  // Bezier
+  int n = 3; // n means dimensions
+  int  count = 0; // count pieces of bezier
+  int temp = g_ControlPoints.size() - n;
+  while (temp > 0) {
+    count++;
+    temp -= n;
+  }
+
+  Vector2d sum = Vector2d(0, 0);
+  glColor3d(0.0, 0.0, 1.0);
+	glLineWidth(1);
+  glBegin(GL_LINE_STRIP);
+  if (g_ControlPoints.size() >= n + 1) {
+    for (int k = 0; k < count; ++k) {
+      for (float t = 0.0f; t <= 1.001f; t += 0.01f) {
+        sum = Vector2d(0, 0);
+        for (int i = 0; i <= n; ++i) {
+          sum += Fact(n)/Fact(i)/Fact(n - i) * pow(t, i) * pow((1.0 - t), (n - i)) * g_ControlPoints[i + k * n];
+        }
+        glVertex2d(sum.x, sum.y);
+      }
+    }
+  }
+  glEnd();
 
 	glutSwapBuffers();
 }

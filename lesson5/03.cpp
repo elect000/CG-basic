@@ -68,6 +68,7 @@ int Fact (int n)
 }
 
 std::vector<Vector2d> g_ControlPoints; // 制御点を格納する
+int n = 3; // n means dimensions
 
 // 表示部分をこの関数で記入
 void display(void) {
@@ -93,56 +94,36 @@ void display(void) {
 	glEnd();
 
   // Bezier
-  int n = 3; // n means dimensions
-  int  count = 0; // count pieces of bezier
+  int count = 0; // count pieces of bezier
   int temp = g_ControlPoints.size() - n;
   while (temp > 0) {
     count++;
     temp -= n;
   }
 
-  Vector2d sum = Vector2d(0, 0);
   glColor3d(0.0, 0.0, 1.0);
 	glLineWidth(1);
   glBegin(GL_LINE_STRIP);
-  if (g_ControlPoints.size() >= n + 1) {
-    for (int k = 0; k < count; ++k) {
-      for (float t = 0.0f; t <= 1.001f; t += 0.01f) {
-        sum = Vector2d(0, 0);
-        for (int i = 0; i <= n; ++i) {
-          sum += Fact(n)/Fact(i)/Fact(n - i) * pow(t, i) * pow((1.0 - t), (n - i)) * g_ControlPoints[i + k * n];
+  if (n == 1) {
+    for(unsigned int i = 0; i < g_ControlPoints.size(); i++) {
+      glVertex2d(g_ControlPoints[i].x, g_ControlPoints[i].y);
+    }
+  }
+  else {
+    Vector2d sum = Vector2d(0, 0);
+    if (g_ControlPoints.size() >= n + 1) {
+      for (int k = 0; k < count; ++k) {
+        for (float t = 0.0f; t <= 1.001f; t += 0.01f) {
+          sum = Vector2d(0, 0);
+          for (int i = 0; i <= n; ++i) {
+            sum += Fact(n)/Fact(i)/Fact(n - i) * pow(t, i) * pow((1.0 - t), (n - i)) * g_ControlPoints[i + k * n];
+          }
+          glVertex2d(sum.x, sum.y);
         }
-        glVertex2d(sum.x, sum.y);
       }
     }
   }
   glEnd();
-
-  Vector2d l = Vector2d(0, 0);
-  glColor3d(0.0, 1.0, 1.0);
-	glLineWidth(1);
-  
-  if (g_ControlPoints.size() >= 4) {
-    for (int k = 0; k < count; ++k) {
-      for (float t = 0.0f; t <= 1.001f; t += 0.01f) {
-        sum = Vector2d(0, 0);
-        for (int i = 0; i <= n; ++i) {
-          sum += Fact(n)/Fact(i)/Fact(n - i) * pow(t, i) * pow((1.0 - t), (n - i)) * g_ControlPoints[i + k * n];
-        }
-        l = -3 * (1 - t) * (1 - t) * g_ControlPoints[k * 3]
-          + (9 * t * t - 12 * t + 3) * g_ControlPoints[k * 3 + 1]
-          + (-9 * t * t + 6 * t) * g_ControlPoints[k * 3 + 2]
-          + 3 * t * t * g_ControlPoints[k * 3 + 3];
-        glBegin(GL_LINE_STRIP);
-        glVertex2d(sum.x, sum.y);
-        l.normalize();
-        l = l * 70;
-        l.set(sum.x - l.y, sum.y + l.x);
-        glVertex2d(l.x, l.y);
-        glEnd();
-      }
-    }
-  }
 
 	glutSwapBuffers();
 }
@@ -168,6 +149,7 @@ void keyboard(unsigned char key, int x, int y) {
 	case 'Q':
 	case '\033':
 		exit(0);  /* '\033' は ESC の ASCII コード */
+
 	default:
 		break;
 	} 
@@ -197,6 +179,21 @@ void mouse(int button, int state, int x, int y) {
 	}
 }
 
+void SpecialInput(int key, int x, int y) {
+  switch (key) {
+  case GLUT_KEY_UP:
+    n++;
+    break;
+  case GLUT_KEY_DOWN:
+    if (n >= 2){
+      n--;
+    }
+    break;
+  default:
+    break;
+  }
+  glutPostRedisplay();
+}
 // メインプログラム
 int main (int argc, char *argv[]) { 
 	glutInit(&argc, argv);          // ライブラリの初期化
@@ -206,6 +203,7 @@ int main (int argc, char *argv[]) {
 	glutDisplayFunc(display);       // 表示関数を指定
 	glutReshapeFunc(resizeWindow);  // ウィンドウサイズが変更されたときの関数を指定
 	glutKeyboardFunc(keyboard);     // キーボードイベント処理関数を指定
+  glutSpecialFunc(SpecialInput);  // enable arrow keys
 	glutMouseFunc(mouse);           // マウスイベント処理関数を指定
 	glutMainLoop();                 // イベント待ち
 	return 0;

@@ -1,0 +1,38 @@
+# This is a Bibtex reference
+#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:t arch:headline ^:nil
+#+OPTIONS: author:t broken-links:nil c:nil creator:nil
+#+OPTIONS: d:(not "LOGBOOK") date:nil e:nil email:nil f:t inline:t num:t
+#+OPTIONS: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
+#+OPTIONS: timestamp:nil title:t toc:nil todo:t |:t
+#+TITLE: CG基礎 課題5
+#+DATE: 
+#+AUTHOR: 情報科学類二年 江畑 拓哉(201611350)
+#+LANGUAGE: en
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+#+CREATOR: Emacs 24.5.1 (Org mode 9.1.1)
+#+LATEX_CLASS: koma-article
+#+LATEX_CLASS_OPTIONS: 
+#+LATEX_HEADER_EXTRA: \bibliography{reference}
+#+LaTeX_CLASS_OPTIONS:
+#+DESCRIPTION:
+#+KEYWORDS:
+#+SUBTITLE:
+#+STARTUP: indent overview inlineimages
+
+* 動作環境の説明
+- OS
+  Manjaro Linux 17.0.6 Gellivara
+- コンパイル
+  g++ (GCC) 7.2.0
+  Copyright (C) 2017 Free Software Foundation, Inc.
+- コーディング
+  Spacemacs 0.200.9 (Emacs25.3.1)
+
+* 課題1
+
+* 課題2
+
+* 課題3
+
+* 課題4
