@@ -1,4 +1,3 @@
-
 #include <cstdlib>
 #include <cmath>
 #include <vector>
@@ -61,27 +60,15 @@ Vector2d operator/( const Vector2d& v, const double& k ) { return( Vector2d( v.x
 
 
 std::vector<Vector2d> g_ControlPoints; // 制御点を格納する
+// dimension
+int dim = 3;
 
 // ノットベクトルの要素数 （参考書にあわせて、要素数は10としている）
-const int NUM_NOT = 10;
+const int NUM_NOT = 15;
 // ノットベクトル
 // この配列の値を変更することで基底関数が変化する。その結果として形が変わる。
 // 下の例では、一定間隔で値が変化するので、「一様Bスプライン曲線」となる
-// double g_NotVector[] = {0, 1, 2, 3, 4, 5, 6, 7};
-// double g_NotVector[] = {0, 0, 0, 1, 2, 2, 2, 2};
-// double g_NotVector[] = {0, 1, 3, 7, 11, 11, 11, 11};
-// double g_NotVector[] = {0, 0, 0, 0, 2, 2, 2, 2};
-// double g_NotVector[] = {1, 1, 2, 2, 3, 3, 4, 4};
-// double g_NotVector[] = {0, 1, 2, 4, 4, 6, 7, 8};
-// double g_NotVector[] = {0, 1, 2, 3, 4, 6, 7, 8};
-// double g_NotVector[] = {0, 0, 0, 4, 4, 6, 6, 6};
-// 9
-// double g_NotVector[] = {0, 0, 0, 4, 4, 6, 6, 6, 6};
-// double g_NotVector[] = {3, 3, 3, 4, 5, 6, 7, 7, 7};
-// double g_NotVector[] = {0, 0, 0, 0, 9, 10, 11, 15, 18};
-// 10
-// double g_NotVector[] = {0, 1, 1, 1, 1, 10, 11, 11, 11, 11};
-double g_NotVector[] = {2, 3, 3, 3, 3, 13, 14, 14, 14, 14};
+double g_NotVector[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
 
 // 基底関数 N{i,n}(t)の値を計算する
 double getBaseN(int i, int n, double t) {
@@ -145,10 +132,13 @@ void display(void) {
 	// ★ ここにBスプライン曲線を描画するプログラムコードを入れる
 	// ヒント1: 3次Bスプラインの場合は制御点を4つ入れるまでは何も描けない
 	// ヒント2: パラメータtの値の取り得る範囲に注意
-  int dim = 3;
   int points = g_ControlPoints.size();
   int not_num = 2 * dim + (1 + points - dim);
   Vector2d sum = Vector2d (0.0, 0.0);
+  Vector2d prev = Vector2d (0.0, 0.0);
+  Vector2d nvector = Vector2d (0.0, 0.0);
+  bool a = false;
+  int temp = dim;
 
   if (dim + 1 > points) {
   } else {
@@ -163,7 +153,68 @@ void display(void) {
       glVertex2d (sum.x, sum.y);
     }
     glEnd ();
+
+    // normal vector
+    for (double t = g_NotVector [dim]; t < g_NotVector [points]; t += 0.01) {
+      sum.set (0.0, 0.0);
+      for (int i = 0; i <= points - 1; i++) {
+        sum = sum + getBaseN (i, dim, t) * g_ControlPoints [i];
+      }
+      if (a) {
+        nvector = sum - prev;
+        nvector.normalize();
+
+        glColor3d (0.0, 1.0, 1.0);
+        glLineWidth (1);
+        glBegin(GL_LINE_STRIP);
+        glVertex2d(sum.x - nvector.y * 100, sum.y + nvector.x * 100);
+        glVertex2d(sum.x, sum.y);
+        glEnd();
+      }
+      prev = sum;
+      a = true;
+    }
+
+    // points
+    for (double t = g_NotVector [dim]; t <= g_NotVector [points]; t += 0.01) {
+      sum.set (0.0, 0.0);
+      for (int i = 0; i <= points - 1; i++) {
+        sum = sum + getBaseN (i, dim, t) * g_ControlPoints [i];
+      }
+      if (t - g_NotVector [temp] > 0.01) {
+        glColor3d (1.0, 0.0, 0.0);
+        glPointSize(5.0);
+        glBegin (GL_POINTS);
+        glVertex2d (sum.x, sum.y);
+        glEnd ();
+        temp++;
+      }
+    }
+    glColor3d (1.0, 0.0, 0.0);
+    glPointSize(5.0);
+    glBegin (GL_POINTS);
+    glVertex2d (sum.x, sum.y);
+    glEnd ();
   }
+  // graph
+  // base line
+  double line_size = 500 / g_NotVector [NUM_NOT - 1] - g_NotVector [0];
+  for (double t = g_NotVector [0]; t < g_NotVector [NUM_NOT - 1]; t += 0.01) {
+    glColor3d (0.0, 1.0, 0.0);
+    glPointSize(1.0);
+    glBegin (GL_POINTS);
+    for (int i = 0; i <  NUM_NOT - (dim + 1); ++i) {
+      glVertex2d (line_size * t + 250 , 750 - getBaseN (i, dim, t) * 100);
+    }
+    glEnd ();
+  }
+
+  glColor3d (0.0, 0.0, 0.0);
+  glLineWidth (1);
+  glBegin(GL_LINE_STRIP);
+  glVertex2d(250.0, 750.0);
+  glVertex2d(750.0, 750.0);
+  glEnd();
 	glutSwapBuffers();
 }
 
@@ -194,6 +245,22 @@ void keyboard(unsigned char key, int x, int y) {
 	glutPostRedisplay();
 }
 
+void keyboardspecial(int key, int x, int y) {
+  switch (key) {
+  case GLUT_KEY_UP:
+    dim++;
+    break;
+  case GLUT_KEY_DOWN:
+    if (dim != 1) {
+      dim--;
+      break;
+    }
+  default:
+    break;
+  }
+  glutPostRedisplay();
+}
+
 // マウスイベント処理
 void mouse(int button, int state, int x, int y) {
 	if(state == GLUT_DOWN) {
@@ -202,7 +269,7 @@ void mouse(int button, int state, int x, int y) {
 			// クリックした位置に制御点を追加
 			// ノット数を増やせばいくらでも制御点を追加できるが、今回はNUM_NOTの値で固定されているので
 			// いくらでも追加できるわけではない
-			if(g_ControlPoints.size() < NUM_NOT - 4) {
+			if(g_ControlPoints.size() < NUM_NOT - (dim + 1)) {
 				g_ControlPoints.push_back(Vector2d(x, y));
 			}
 		break;
@@ -220,6 +287,15 @@ void mouse(int button, int state, int x, int y) {
 		glutPostRedisplay(); // 再描画
 	}
 }
+void motion (int x, int y) {
+  for (int i = 0; i < g_ControlPoints.size() ; ++i) {
+    if ((g_ControlPoints [i] - Vector2d (x, y)).length () < 20.0) {
+      g_ControlPoints [i] = Vector2d (x,y);
+    }
+  }
+  glutPostRedisplay(); // 再描画
+
+}
 
 // メインプログラム
 int main (int argc, char *argv[]) { 
@@ -230,6 +306,8 @@ int main (int argc, char *argv[]) {
 	glutDisplayFunc(display);       // 表示関数を指定
 	glutReshapeFunc(resizeWindow);  // ウィンドウサイズが変更されたときの関数を指定
 	glutKeyboardFunc(keyboard);     // キーボードイベント処理関数を指定
+  glutSpecialUpFunc(keyboardspecial);
+  glutMotionFunc(motion);
 	glutMouseFunc(mouse);           // マウスイベント処理関数を指定
 	glutMainLoop();                 // イベント待ち
 	return 0;
