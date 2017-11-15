@@ -1,0 +1,1117 @@
+# This is a Bibtex reference
+#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:t arch:headline ^:nil
+#+OPTIONS: author:t broken-links:nil c:nil creator:nil
+#+OPTIONS: d:(not "LOGBOOK") date:nil e:nil email:nil f:t inline:t num:t
+#+OPTIONS: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
+#+OPTIONS: timestamp:nil title:t toc:nil todo:t |:t
+#+TITLE: CG基礎 課題6
+#+DATE: 
+#+AUTHOR: 情報科学類二年 江畑 拓哉(201611350)
+#+LANGUAGE: en
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+#+CREATOR: Emacs 24.5.1 (Org mode 9.1.1)
+#+LATEX_CLASS: koma-article
+#+LATEX_CLASS_OPTIONS: 
+#+LATEX_HEADER_EXTRA: \bibliography{reference}
+#+LaTeX_CLASS_OPTIONS:
+#+DESCRIPTION:
+#+KEYWORDS:
+#+SUBTITLE:
+#+STARTUP: indent overview inlineimages
+
+* 動作環境の説明
+- OS
+  Manjaro Linux 17.0.6 Gellivara
+- コンパイル
+  g++ (GCC) 7.2.0
+  Copyright (C) 2017 Free Software Foundation, Inc.
+- コーディング
+  Spacemacs 0.200.9 (Emacs25.3.1)
+
+* 課題1
+  
+** 実行結果
+
+- $\infty$ 記号
+  [[~/Pictures/6-infty.png]]
+   
+- 円
+
+   [[~/Pictures/6-circle.png]]
+
+** コード
+   #+BEGIN_SRC c++
+#include <cstdlib>
+#include <cmath>
+#include <vector>
+#include <GL/glut.h>
+#include <stdio.h>
+using namespace std;
+// 2次元ベクトルを扱うためのクラス
+class Vector2d {
+public:
+	double x, y;
+	Vector2d() { x = y = 0; }
+	Vector2d(double _x, double _y) { x = _x; y = _y; }
+	void set(double _x, double _y) { x = _x; y = _y; }
+
+	// 長さを1に正規化する
+	void normalize() {
+		double len = length();
+		x /= len; y /= len; 
+	}
+
+	// 長さを返す
+	double length() { return sqrt(x * x + y * y); }
+
+	// s倍する
+	void scale(const double s) { x *= s; y *= s; }
+
+	// 加算の定義
+	Vector2d operator+(Vector2d v) { return Vector2d(x + v.x, y + v.y); }
+
+	// 減算の定義
+	Vector2d operator-(Vector2d v) { return Vector2d(x - v.x, y - v.y); }
+
+	// 内積の定義
+	double operator*(Vector2d v) { return x * v.x + y* v.y; }
+
+	// 代入演算の定義
+	Vector2d& operator=(const Vector2d& v){ x = v.x; y = v.y; return (*this); }
+
+	// 加算代入の定義
+	Vector2d& operator+=(const Vector2d& v) { x += v.x; y += v.y; return (*this); }
+
+	// 減算代入の定義
+	Vector2d& operator-=(const Vector2d& v) { x -= v.x; y -= v.y; return (*this); }
+
+	// 値を出力する
+	void print() { printf("Vector2d(%f %f)\n", x, y); }
+};
+
+// マイナスの符号の付いたベクトルを扱えるようにするための定義 例：b=(-a); のように記述できる
+Vector2d operator-( const Vector2d& v ) { return( Vector2d( -v.x, -v.y ) ); }
+
+// ベクトルと実数の積を扱えるようにするための定義 例： c=5*a+2*b; c=b*3; のように記述できる
+Vector2d operator*( const double& k, const Vector2d& v ) { return( Vector2d( k*v.x, k*v.y ) );}
+Vector2d operator*( const Vector2d& v, const double& k ) { return( Vector2d( v.x*k, v.y*k ) );}
+
+// ベクトルを実数で割る操作を扱えるようにするための定義 例： c=a/2.3; のように記述できる
+Vector2d operator/( const Vector2d& v, const double& k ) { return( Vector2d( v.x/k, v.y/k ) );}
+
+// ================================================================================================
+
+
+std::vector<Vector2d> g_ControlPoints; // 制御点を格納する
+
+// ノットベクトルの要素数 （参考書にあわせて、要素数は10としている）
+const int NUM_NOT = 11;
+
+// ノットベクトル
+// この配列の値を変更することで基底関数が変化する。その結果として形が変わる。
+// 下の例では、一定間隔で値が変化するので、「一様Bスプライン曲線」となる
+double g_NotVector[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+
+// 基底関数 N{i,n}(t)の値を計算する
+double getBaseN(int i, int n, double t) {
+	if( n == 0 ) {
+		// n が 0 の時だけ t の値に応じて 0 または 1 を返す
+		if( t >= g_NotVector[i] && t < g_NotVector[i+1] ) {
+			return 1.0;
+		}
+		return 0;
+	} else {
+		// ★ここに必要なプログラムコードを記述する
+		// ★係数を計算するときに、ノットが重なる（分母がゼロとなる）ときには、その項を無視する。
+    if (g_NotVector [i + n] == g_NotVector [i]
+        && g_NotVector[i + n + 1] == g_NotVector[i + 1]) {
+      return 0;
+    }
+    if (g_NotVector[i + n] == g_NotVector[i]) {
+      return
+        ((g_NotVector[i + n + 1] - t) / (g_NotVector[i + n + 1] - g_NotVector[i + 1]))
+        * getBaseN (i + 1, n - 1, t);
+    } else if (g_NotVector[i + n + 1] == g_NotVector[i + 1]) {
+      return
+        ((t - g_NotVector[i]) / (g_NotVector[i + n] - g_NotVector[i]))
+        * getBaseN (i, n - 1, t);
+
+    } else {
+      return
+        (((t - g_NotVector[i]) / (g_NotVector[i + n] - g_NotVector[i]))
+         * getBaseN (i, n - 1, t))
+        +
+        (((g_NotVector[i + n + 1] - t) / (g_NotVector[i + n + 1] - g_NotVector[i + 1]))
+           * getBaseN (i + 1, n - 1, t));
+    }
+		// return 0; // この戻り値は仮のもの。適切に書き変える。
+	}
+}
+
+// 表示部分をこの関数で記入
+void display(void) {
+	glClearColor (1.0, 1.0, 1.0, 1.0);  // 消去色指定
+	glClear (GL_COLOR_BUFFER_BIT );     // 画面消去
+
+	// 制御点の描画
+	glPointSize(5);
+	glColor3d(0.0, 0.0, 0.0);
+	glBegin(GL_POINTS);
+	for(unsigned int i = 0; i < g_ControlPoints.size(); i++) {
+		glVertex2d(g_ControlPoints[i].x, g_ControlPoints[i].y);
+	}
+	glEnd();
+
+	// 制御点を結ぶ線分の描画
+	glColor3d(1.0, 0.0, 0.0);
+	glLineWidth(1);
+	glBegin(GL_LINE_STRIP);
+	for(unsigned int i = 0; i < g_ControlPoints.size(); i++) {
+		glVertex2d(g_ControlPoints[i].x, g_ControlPoints[i].y);
+	}
+	glEnd();
+
+	// ★ ここにBスプライン曲線を描画するプログラムコードを入れる
+	// ヒント1: 3次Bスプラインの場合は制御点を4つ入れるまでは何も描けない
+	// ヒント2: パラメータtの値の取り得る範囲に注意
+  int dim = 3;
+  int points = g_ControlPoints.size();
+  Vector2d sum = Vector2d (0.0, 0.0);
+
+  if (dim + 1 > points) {
+  } else {
+    glColor3d (0.0, 0.0, 1.0);
+    glLineWidth (1);
+    glBegin (GL_LINE_STRIP);
+    for (double t = g_NotVector [dim]; t < g_NotVector [points]; t += 0.01) {
+      sum.set (0.0, 0.0);
+      for (int i = 0; i <= points - 1; i++) {
+        sum = sum + getBaseN (i, dim, t) * g_ControlPoints [i];
+      }
+      glVertex2d (sum.x, sum.y);
+    }
+    glEnd ();
+  }
+	glutSwapBuffers();
+}
+
+void resizeWindow(int w, int h) {
+	h = (h == 0) ? 1 : h;
+	glViewport(0, 0, w, h);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	// ウィンドウ内の座標系設定
+	// マウスクリックの座標と描画座標が一致するような正投影
+	glOrtho(0, w, h, 0, -10, 10);
+
+	glMatrixMode(GL_MODELVIEW);
+}
+
+// キーボードイベント処理
+void keyboard(unsigned char key, int x, int y) {
+	switch (key) {
+	case 'q':
+	case 'Q':
+	case '\033':
+		exit(0);  /* '\033' は ESC の ASCII コード */
+	default:
+		break;
+	} 
+	glutPostRedisplay();
+}
+
+// マウスイベント処理
+void mouse(int button, int state, int x, int y) {
+	if(state == GLUT_DOWN) {
+		switch (button) {
+		case GLUT_LEFT_BUTTON:
+			// クリックした位置に制御点を追加
+			// ノット数を増やせばいくらでも制御点を追加できるが、今回はNUM_NOTの値で固定されているので
+			// いくらでも追加できるわけではない
+			if(g_ControlPoints.size() < NUM_NOT - 4) {
+				g_ControlPoints.push_back(Vector2d(x, y));
+			}
+		break;
+		case GLUT_MIDDLE_BUTTON:
+		break;
+		case GLUT_RIGHT_BUTTON:
+			// 末尾の制御点の削除
+			if(!g_ControlPoints.empty()) {
+				g_ControlPoints.pop_back();
+			}
+		break;
+		default:
+		break;
+		}
+		glutPostRedisplay(); // 再描画
+	}
+}
+
+// メインプログラム
+int main (int argc, char *argv[]) { 
+	glutInit(&argc, argv);          // ライブラリの初期化
+	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE); // 描画モードの指定
+	glutInitWindowSize(800 , 800);  // ウィンドウサイズを指定
+	glutCreateWindow(argv[0]);      // ウィンドウを作成
+	glutDisplayFunc(display);       // 表示関数を指定
+	glutReshapeFunc(resizeWindow);  // ウィンドウサイズが変更されたときの関数を指定
+	glutKeyboardFunc(keyboard);     // キーボードイベント処理関数を指定
+	glutMouseFunc(mouse);           // マウスイベント処理関数を指定
+	glutMainLoop();                 // イベント待ち
+	return 0;
+}
+
+   #+END_SRC
+
+* 課題2
+
+** 実行結果
+   [[~/Pictures/0-0-0-0-1-1-1-1.png]]
+   第一と第四の制御点を曲線が通った。
+
+** コード
+   #+BEGIN_SRC c++
+#include <cstdlib>
+#include <cmath>
+#include <vector>
+#include <GL/glut.h>
+#include <stdio.h>
+using namespace std;
+// 2次元ベクトルを扱うためのクラス
+class Vector2d {
+public:
+	double x, y;
+	Vector2d() { x = y = 0; }
+	Vector2d(double _x, double _y) { x = _x; y = _y; }
+	void set(double _x, double _y) { x = _x; y = _y; }
+
+	// 長さを1に正規化する
+	void normalize() {
+		double len = length();
+		x /= len; y /= len; 
+	}
+
+	// 長さを返す
+	double length() { return sqrt(x * x + y * y); }
+
+	// s倍する
+	void scale(const double s) { x *= s; y *= s; }
+
+	// 加算の定義
+	Vector2d operator+(Vector2d v) { return Vector2d(x + v.x, y + v.y); }
+
+	// 減算の定義
+	Vector2d operator-(Vector2d v) { return Vector2d(x - v.x, y - v.y); }
+
+	// 内積の定義
+	double operator*(Vector2d v) { return x * v.x + y* v.y; }
+
+	// 代入演算の定義
+	Vector2d& operator=(const Vector2d& v){ x = v.x; y = v.y; return (*this); }
+
+	// 加算代入の定義
+	Vector2d& operator+=(const Vector2d& v) { x += v.x; y += v.y; return (*this); }
+
+	// 減算代入の定義
+	Vector2d& operator-=(const Vector2d& v) { x -= v.x; y -= v.y; return (*this); }
+
+	// 値を出力する
+	void print() { printf("Vector2d(%f %f)\n", x, y); }
+};
+
+// マイナスの符号の付いたベクトルを扱えるようにするための定義 例：b=(-a); のように記述できる
+Vector2d operator-( const Vector2d& v ) { return( Vector2d( -v.x, -v.y ) ); }
+
+// ベクトルと実数の積を扱えるようにするための定義 例： c=5*a+2*b; c=b*3; のように記述できる
+Vector2d operator*( const double& k, const Vector2d& v ) { return( Vector2d( k*v.x, k*v.y ) );}
+Vector2d operator*( const Vector2d& v, const double& k ) { return( Vector2d( v.x*k, v.y*k ) );}
+
+// ベクトルを実数で割る操作を扱えるようにするための定義 例： c=a/2.3; のように記述できる
+Vector2d operator/( const Vector2d& v, const double& k ) { return( Vector2d( v.x/k, v.y/k ) );}
+
+// ================================================================================================
+
+
+std::vector<Vector2d> g_ControlPoints; // 制御点を格納する
+
+// ノットベクトルの要素数 （参考書にあわせて、要素数は10としている）
+const int NUM_NOT = 8;
+
+// ノットベクトル
+// この配列の値を変更することで基底関数が変化する。その結果として形が変わる。
+// 下の例では、一定間隔で値が変化するので、「一様Bスプライン曲線」となる
+double g_NotVector[] = {0, 0, 0, 0, 1, 1, 1, 1}; 
+
+
+// 基底関数 N{i,n}(t)の値を計算する
+double getBaseN(int i, int n, double t) {
+	if( n == 0 ) {
+		// n が 0 の時だけ t の値に応じて 0 または 1 を返す
+		if( t >= g_NotVector[i] && t < g_NotVector[i+1] ) {
+			return 1.0;
+		}
+		return 0;
+	} else {
+		// ★ここに必要なプログラムコードを記述する
+		// ★係数を計算するときに、ノットが重なる（分母がゼロとなる）ときには、その項を無視する。
+    if (g_NotVector [i + n] == g_NotVector [i]
+        && g_NotVector[i + n + 1] == g_NotVector[i + 1]) {
+      return 0;
+    }
+    if (g_NotVector[i + n] == g_NotVector[i]) {
+      return
+        ((g_NotVector[i + n + 1] - t) / (g_NotVector[i + n + 1] - g_NotVector[i + 1]))
+        * getBaseN (i + 1, n - 1, t);
+    } else if (g_NotVector[i + n + 1] == g_NotVector[i + 1]) {
+      return
+        ((t - g_NotVector[i]) / (g_NotVector[i + n] - g_NotVector[i]))
+        * getBaseN (i, n - 1, t);
+
+    } else {
+      return
+        (((t - g_NotVector[i]) / (g_NotVector[i + n] - g_NotVector[i]))
+         * getBaseN (i, n - 1, t))
+        +
+        (((g_NotVector[i + n + 1] - t) / (g_NotVector[i + n + 1] - g_NotVector[i + 1]))
+           * getBaseN (i + 1, n - 1, t));
+    }
+		// return 0; // この戻り値は仮のもの。適切に書き変える。
+	}
+}
+
+// 表示部分をこの関数で記入
+void display(void) {
+	glClearColor (1.0, 1.0, 1.0, 1.0);  // 消去色指定
+	glClear (GL_COLOR_BUFFER_BIT );     // 画面消去
+
+	// 制御点の描画
+	glPointSize(5);
+	glColor3d(0.0, 0.0, 0.0);
+	glBegin(GL_POINTS);
+	for(unsigned int i = 0; i < g_ControlPoints.size(); i++) {
+		glVertex2d(g_ControlPoints[i].x, g_ControlPoints[i].y);
+	}
+	glEnd();
+
+	// 制御点を結ぶ線分の描画
+	glColor3d(1.0, 0.0, 0.0);
+	glLineWidth(1);
+	glBegin(GL_LINE_STRIP);
+	for(unsigned int i = 0; i < g_ControlPoints.size(); i++) {
+		glVertex2d(g_ControlPoints[i].x, g_ControlPoints[i].y);
+	}
+	glEnd();
+
+	// ★ ここにBスプライン曲線を描画するプログラムコードを入れる
+	// ヒント1: 3次Bスプラインの場合は制御点を4つ入れるまでは何も描けない
+	// ヒント2: パラメータtの値の取り得る範囲に注意
+  int dim = 3;
+  int points = g_ControlPoints.size();
+  Vector2d sum = Vector2d (0.0, 0.0);
+
+  if (dim + 1 > points) {
+  } else {
+    glColor3d (0.0, 0.0, 1.0);
+    glLineWidth (1);
+    glBegin (GL_LINE_STRIP);
+    for (double t = g_NotVector [dim]; t < g_NotVector [points]; t += 0.01) {
+      sum.set (0.0, 0.0);
+      for (int i = 0; i <= points - 1; i++) {
+        sum = sum + getBaseN (i, dim, t) * g_ControlPoints [i];
+      }
+      glVertex2d (sum.x, sum.y);
+    }
+    glEnd ();
+  }
+	glutSwapBuffers();
+}
+
+void resizeWindow(int w, int h) {
+	h = (h == 0) ? 1 : h;
+	glViewport(0, 0, w, h);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	// ウィンドウ内の座標系設定
+	// マウスクリックの座標と描画座標が一致するような正投影
+	glOrtho(0, w, h, 0, -10, 10);
+
+	glMatrixMode(GL_MODELVIEW);
+}
+
+// キーボードイベント処理
+void keyboard(unsigned char key, int x, int y) {
+	switch (key) {
+	case 'q':
+	case 'Q':
+	case '\033':
+		exit(0);  /* '\033' は ESC の ASCII コード */
+	default:
+		break;
+	} 
+	glutPostRedisplay();
+}
+
+// マウスイベント処理
+void mouse(int button, int state, int x, int y) {
+	if(state == GLUT_DOWN) {
+		switch (button) {
+		case GLUT_LEFT_BUTTON:
+			// クリックした位置に制御点を追加
+			// ノット数を増やせばいくらでも制御点を追加できるが、今回はNUM_NOTの値で固定されているので
+			// いくらでも追加できるわけではない
+			if(g_ControlPoints.size() < NUM_NOT - 4) {
+				g_ControlPoints.push_back(Vector2d(x, y));
+			}
+		break;
+		case GLUT_MIDDLE_BUTTON:
+		break;
+		case GLUT_RIGHT_BUTTON:
+			// 末尾の制御点の削除
+			if(!g_ControlPoints.empty()) {
+				g_ControlPoints.pop_back();
+			}
+		break;
+		default:
+		break;
+		}
+		glutPostRedisplay(); // 再描画
+	}
+}
+
+// メインプログラム
+int main (int argc, char *argv[]) { 
+	glutInit(&argc, argv);          // ライブラリの初期化
+	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE); // 描画モードの指定
+	glutInitWindowSize(800 , 800);  // ウィンドウサイズを指定
+	glutCreateWindow(argv[0]);      // ウィンドウを作成
+	glutDisplayFunc(display);       // 表示関数を指定
+	glutReshapeFunc(resizeWindow);  // ウィンドウサイズが変更されたときの関数を指定
+	glutKeyboardFunc(keyboard);     // キーボードイベント処理関数を指定
+	glutMouseFunc(mouse);           // マウスイベント処理関数を指定
+	glutMainLoop();                 // イベント待ち
+	return 0;
+}
+   #+END_SRC
+
+* 課題3
+
+** 実行結果
+   - 0, 0, 0, 1, 2, 2, 2, 2
+     [[~/Pictures/0-0-0-1-2-2-2-2.png]]
+     ３次のB-スプライン曲線では4つ同じ値が続いた場合はその点を通ることが予想できる。
+
+   - 0, 1, 3, 7, 11, 11, 11, 11
+     [[~/Pictures/0-1-3-7-11-11-11-11.png]]
+     こちらも上と同じ現象が起こった。
+
+   - 0, 0, 0, 0, 2, 2, 2, 2 
+     [[~/Pictures/0-0-0-0-2-2-2-2.png]]
+     こちらは第１、４点を通る結果になった。やはり４つ同じ値が続いた場合それに対応する制御点を曲線が通ることがわかった。
+
+   - 1, 1, 2, 2, 3, 3, 4, 4 
+     [[~/Pictures/1-1-2-2-3-3-4-4.png]]
+     この実験では第１，２点、第３，４点の線分上を曲線が通っているようである。４つの点が曲線の通る位置に影響していることがわかった。
+
+   - 0, 1, 2, 4, 4, 6, 7, 8
+     [[~/Pictures/0-1-2-4-4-6-7-8.png]]
+     ここではなぜか線が描画されなかった。８つの点の中央である４番目と５番目の値が同じ場合にこのような結果になるようである。
+
+   - 0, 1, 2, 3, 4, 6, 7, 8
+     [[~/Pictures/0-1-2-3-4-6-7-8.png]]
+     中央から考えて前の方の制御点に曲線が寄っていることがわかる。ノットベクトルは4 6 7 8という形になっており前半に比べて離れていることがわかる。
+     
+   - 0, 0, 0, 4, 4, 6, 6, 6
+     [[~/Pictures/0-0-0-4-4-6-6-6.png]]
+     ２つ上と同じ結果になることがわかった。中央の値が重なると曲線の長さは０になってしまうことがわかった。
+
+   - 0, 0, 0, 4, 4, 4, 6, 6, 6
+     [[~/Pictures/0-0-0-4-4-4-6-6-6.png]]
+     やはり中央部が同じであると曲線の長さが０になってしまっているとわかった。
+
+   - 0, 0, 0, 4, 4, 6, 6, 6, 6
+     [[~/Pictures/0-0-0-4-4-6-6-6-6.png]]
+     ノットベクトルの長さが変わっても４つの値が等しくなるとそれに対応した制御点を曲線が通ることがわかった。第２、３点の線分を曲線が通っており、ここまでの実験から'0 0 4 4'という部分が影響していることが伺える。
+
+   - 3, 3, 3, 4, 5, 6, 7, 7, 7
+     [[~/Pictures/3-3-3-4-5-6-7-7-7.png]]
+     ノットベクトルの値が対称の場合、対称な曲線がかけることがわかった。
+
+   - 0, 0, 0, 0, 9, 10, 11, 15, 18
+     [[~/Pictures/0-0-0-0-9-10-11-15-18.png]]
+     今までの実験からわかっていた通り、４つの値が等しい場合はそれに対応した制御点を曲線が通った。
+
+   - 0, 1, 1, 1, 1, 10, 11, 11, 11, 11
+     [[~/Pictures/0-1-1-1-1-10-11-11-11-11.png]]
+     上と同じことが２つの箇所で見られた。
+     
+   - 2, 3, 3, 3, 3, 13, 14, 14, 14, 14
+     [[~/Pictures/2-3-3-3-3-13-14-14-14-14.png]]
+     この図から、どちらにノットベクトルの各値が詰まっているかによって曲線のより具合が変わることがわかった。
+
+　授業スライドから、一様なノットベクトル列の場合、あるｔの値では４つの制御点が影響していることを学んでいた。また４つノットベクトルの値が等しいとき、制御点を曲線が通ることになることがわかった。そして４つの値が２つと２つといった形に別れていると、２つの制御点の線分上を曲線が通ることがわかった。
+** コード
+   #+BEGIN_SRC c++
+#include <cstdlib>
+#include <cmath>
+#include <vector>
+#include <GL/glut.h>
+#include <stdio.h>
+using namespace std;
+// 2次元ベクトルを扱うためのクラス
+class Vector2d {
+public:
+	double x, y;
+	Vector2d() { x = y = 0; }
+	Vector2d(double _x, double _y) { x = _x; y = _y; }
+	void set(double _x, double _y) { x = _x; y = _y; }
+
+	// 長さを1に正規化する
+	void normalize() {
+		double len = length();
+		x /= len; y /= len; 
+	}
+
+	// 長さを返す
+	double length() { return sqrt(x * x + y * y); }
+
+	// s倍する
+	void scale(const double s) { x *= s; y *= s; }
+
+	// 加算の定義
+	Vector2d operator+(Vector2d v) { return Vector2d(x + v.x, y + v.y); }
+
+	// 減算の定義
+	Vector2d operator-(Vector2d v) { return Vector2d(x - v.x, y - v.y); }
+
+	// 内積の定義
+	double operator*(Vector2d v) { return x * v.x + y* v.y; }
+
+	// 代入演算の定義
+	Vector2d& operator=(const Vector2d& v){ x = v.x; y = v.y; return (*this); }
+
+	// 加算代入の定義
+	Vector2d& operator+=(const Vector2d& v) { x += v.x; y += v.y; return (*this); }
+
+	// 減算代入の定義
+	Vector2d& operator-=(const Vector2d& v) { x -= v.x; y -= v.y; return (*this); }
+
+	// 値を出力する
+	void print() { printf("Vector2d(%f %f)\n", x, y); }
+};
+
+// マイナスの符号の付いたベクトルを扱えるようにするための定義 例：b=(-a); のように記述できる
+Vector2d operator-( const Vector2d& v ) { return( Vector2d( -v.x, -v.y ) ); }
+
+// ベクトルと実数の積を扱えるようにするための定義 例： c=5*a+2*b; c=b*3; のように記述できる
+Vector2d operator*( const double& k, const Vector2d& v ) { return( Vector2d( k*v.x, k*v.y ) );}
+Vector2d operator*( const Vector2d& v, const double& k ) { return( Vector2d( v.x*k, v.y*k ) );}
+
+// ベクトルを実数で割る操作を扱えるようにするための定義 例： c=a/2.3; のように記述できる
+Vector2d operator/( const Vector2d& v, const double& k ) { return( Vector2d( v.x/k, v.y/k ) );}
+
+// ================================================================================================
+
+
+std::vector<Vector2d> g_ControlPoints; // 制御点を格納する
+
+// ノットベクトルの要素数 （参考書にあわせて、要素数は10としている）
+const int NUM_NOT = 10;
+// ノットベクトル
+// この配列の値を変更することで基底関数が変化する。その結果として形が変わる。
+// 下の例では、一定間隔で値が変化するので、「一様Bスプライン曲線」となる
+// double g_NotVector[] = {0, 1, 2, 3, 4, 5, 6, 7};
+// double g_NotVector[] = {0, 0, 0, 1, 2, 2, 2, 2};
+// double g_NotVector[] = {0, 1, 3, 7, 11, 11, 11, 11};
+// double g_NotVector[] = {0, 0, 0, 0, 2, 2, 2, 2};
+// double g_NotVector[] = {1, 1, 2, 2, 3, 3, 4, 4};
+// double g_NotVector[] = {0, 1, 2, 4, 4, 6, 7, 8};
+// double g_NotVector[] = {0, 1, 2, 3, 4, 6, 7, 8};
+// double g_NotVector[] = {0, 0, 0, 4, 4, 6, 6, 6};
+// 9
+// double g_NotVector[] = {0, 0, 0, 4, 4, 6, 6, 6, 6};
+// double g_NotVector[] = {3, 3, 3, 4, 5, 6, 7, 7, 7};
+// double g_NotVector[] = {0, 0, 0, 0, 9, 10, 11, 15, 18};
+// 10
+// double g_NotVector[] = {0, 1, 1, 1, 1, 10, 11, 11, 11, 11};
+double g_NotVector[] = {2, 3, 3, 3, 3, 13, 14, 14, 14, 14};
+
+// 基底関数 N{i,n}(t)の値を計算する
+double getBaseN(int i, int n, double t) {
+	if( n == 0 ) {
+		// n が 0 の時だけ t の値に応じて 0 または 1 を返す
+		if( t >= g_NotVector[i] && t < g_NotVector[i+1] ) {
+			return 1.0;
+		}
+		return 0;
+	} else {
+		// ★ここに必要なプログラムコードを記述する
+		// ★係数を計算するときに、ノットが重なる（分母がゼロとなる）ときには、その項を無視する。
+    if (g_NotVector [i + n] == g_NotVector [i]
+        && g_NotVector[i + n + 1] == g_NotVector[i + 1]) {
+      return 0;
+    }
+    if (g_NotVector[i + n] == g_NotVector[i]) {
+      return
+        ((g_NotVector[i + n + 1] - t) / (g_NotVector[i + n + 1] - g_NotVector[i + 1]))
+        * getBaseN (i + 1, n - 1, t);
+    } else if (g_NotVector[i + n + 1] == g_NotVector[i + 1]) {
+      return
+        ((t - g_NotVector[i]) / (g_NotVector[i + n] - g_NotVector[i]))
+        * getBaseN (i, n - 1, t);
+
+    } else {
+      return
+        (((t - g_NotVector[i]) / (g_NotVector[i + n] - g_NotVector[i]))
+         * getBaseN (i, n - 1, t))
+        +
+        (((g_NotVector[i + n + 1] - t) / (g_NotVector[i + n + 1] - g_NotVector[i + 1]))
+           * getBaseN (i + 1, n - 1, t));
+    }
+		// return 0; // この戻り値は仮のもの。適切に書き変える。
+	}
+}
+
+// 表示部分をこの関数で記入
+void display(void) {
+	glClearColor (1.0, 1.0, 1.0, 1.0);  // 消去色指定
+	glClear (GL_COLOR_BUFFER_BIT );     // 画面消去
+
+	// 制御点の描画
+	glPointSize(5);
+	glColor3d(0.0, 0.0, 0.0);
+	glBegin(GL_POINTS);
+	for(unsigned int i = 0; i < g_ControlPoints.size(); i++) {
+		glVertex2d(g_ControlPoints[i].x, g_ControlPoints[i].y);
+	}
+	glEnd();
+
+	// 制御点を結ぶ線分の描画
+	glColor3d(1.0, 0.0, 0.0);
+	glLineWidth(1);
+	glBegin(GL_LINE_STRIP);
+	for(unsigned int i = 0; i < g_ControlPoints.size(); i++) {
+		glVertex2d(g_ControlPoints[i].x, g_ControlPoints[i].y);
+	}
+	glEnd();
+
+	// ★ ここにBスプライン曲線を描画するプログラムコードを入れる
+	// ヒント1: 3次Bスプラインの場合は制御点を4つ入れるまでは何も描けない
+	// ヒント2: パラメータtの値の取り得る範囲に注意
+  int dim = 3;
+  int points = g_ControlPoints.size();
+  int not_num = 2 * dim + (1 + points - dim);
+  Vector2d sum = Vector2d (0.0, 0.0);
+
+  if (dim + 1 > points) {
+  } else {
+    glColor3d (0.0, 0.0, 1.0);
+    glLineWidth (1);
+    glBegin (GL_LINE_STRIP);
+    for (double t = g_NotVector [dim]; t < g_NotVector [points]; t += 0.01) {
+      sum.set (0.0, 0.0);
+      for (int i = 0; i <= points - 1; i++) {
+        sum = sum + getBaseN (i, dim, t) * g_ControlPoints [i];
+      }
+      glVertex2d (sum.x, sum.y);
+    }
+    glEnd ();
+  }
+	glutSwapBuffers();
+}
+
+void resizeWindow(int w, int h) {
+	h = (h == 0) ? 1 : h;
+	glViewport(0, 0, w, h);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	// ウィンドウ内の座標系設定
+	// マウスクリックの座標と描画座標が一致するような正投影
+	glOrtho(0, w, h, 0, -10, 10);
+
+	glMatrixMode(GL_MODELVIEW);
+}
+
+// キーボードイベント処理
+void keyboard(unsigned char key, int x, int y) {
+	switch (key) {
+	case 'q':
+	case 'Q':
+	case '\033':
+		exit(0);  /* '\033' は ESC の ASCII コード */
+	default:
+		break;
+	} 
+	glutPostRedisplay();
+}
+
+// マウスイベント処理
+void mouse(int button, int state, int x, int y) {
+	if(state == GLUT_DOWN) {
+		switch (button) {
+		case GLUT_LEFT_BUTTON:
+			// クリックした位置に制御点を追加
+			// ノット数を増やせばいくらでも制御点を追加できるが、今回はNUM_NOTの値で固定されているので
+			// いくらでも追加できるわけではない
+			if(g_ControlPoints.size() < NUM_NOT - 4) {
+				g_ControlPoints.push_back(Vector2d(x, y));
+			}
+		break;
+		case GLUT_MIDDLE_BUTTON:
+		break;
+		case GLUT_RIGHT_BUTTON:
+			// 末尾の制御点の削除
+			if(!g_ControlPoints.empty()) {
+				g_ControlPoints.pop_back();
+			}
+		break;
+		default:
+		break;
+		}
+		glutPostRedisplay(); // 再描画
+	}
+}
+
+// メインプログラム
+int main (int argc, char *argv[]) { 
+	glutInit(&argc, argv);          // ライブラリの初期化
+	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE); // 描画モードの指定
+	glutInitWindowSize(800 , 800);  // ウィンドウサイズを指定
+	glutCreateWindow(argv[0]);      // ウィンドウを作成
+	glutDisplayFunc(display);       // 表示関数を指定
+	glutReshapeFunc(resizeWindow);  // ウィンドウサイズが変更されたときの関数を指定
+	glutKeyboardFunc(keyboard);     // キーボードイベント処理関数を指定
+	glutMouseFunc(mouse);           // マウスイベント処理関数を指定
+	glutMainLoop();                 // イベント待ち
+	return 0;
+}
+   #+END_SRC
+
+* 発展課題
+
+** 実行結果
+   
+** コード
+   #+BEGIN_SRC c++
+#include <cstdlib>
+#include <cmath>
+#include <vector>
+#include <GL/glut.h>
+#include <stdio.h>
+using namespace std;
+// 2次元ベクトルを扱うためのクラス
+class Vector2d {
+public:
+	double x, y;
+	Vector2d() { x = y = 0; }
+	Vector2d(double _x, double _y) { x = _x; y = _y; }
+	void set(double _x, double _y) { x = _x; y = _y; }
+
+	// 長さを1に正規化する
+	void normalize() {
+		double len = length();
+		x /= len; y /= len; 
+	}
+
+	// 長さを返す
+	double length() { return sqrt(x * x + y * y); }
+
+	// s倍する
+	void scale(const double s) { x *= s; y *= s; }
+
+	// 加算の定義
+	Vector2d operator+(Vector2d v) { return Vector2d(x + v.x, y + v.y); }
+
+	// 減算の定義
+	Vector2d operator-(Vector2d v) { return Vector2d(x - v.x, y - v.y); }
+
+	// 内積の定義
+	double operator*(Vector2d v) { return x * v.x + y* v.y; }
+
+	// 代入演算の定義
+	Vector2d& operator=(const Vector2d& v){ x = v.x; y = v.y; return (*this); }
+
+	// 加算代入の定義
+	Vector2d& operator+=(const Vector2d& v) { x += v.x; y += v.y; return (*this); }
+
+	// 減算代入の定義
+	Vector2d& operator-=(const Vector2d& v) { x -= v.x; y -= v.y; return (*this); }
+
+	// 値を出力する
+	void print() { printf("Vector2d(%f %f)\n", x, y); }
+};
+
+// マイナスの符号の付いたベクトルを扱えるようにするための定義 例：b=(-a); のように記述できる
+Vector2d operator-( const Vector2d& v ) { return( Vector2d( -v.x, -v.y ) ); }
+
+// ベクトルと実数の積を扱えるようにするための定義 例： c=5*a+2*b; c=b*3; のように記述できる
+Vector2d operator*( const double& k, const Vector2d& v ) { return( Vector2d( k*v.x, k*v.y ) );}
+Vector2d operator*( const Vector2d& v, const double& k ) { return( Vector2d( v.x*k, v.y*k ) );}
+
+// ベクトルを実数で割る操作を扱えるようにするための定義 例： c=a/2.3; のように記述できる
+Vector2d operator/( const Vector2d& v, const double& k ) { return( Vector2d( v.x/k, v.y/k ) );}
+
+// ================================================================================================
+
+
+std::vector<Vector2d> g_ControlPoints; // 制御点を格納する
+// dimension
+int dim = 3;
+
+// ノットベクトルの要素数 （参考書にあわせて、要素数は10としている）
+const int NUM_NOT = 15;
+// ノットベクトル
+// この配列の値を変更することで基底関数が変化する。その結果として形が変わる。
+// 下の例では、一定間隔で値が変化するので、「一様Bスプライン曲線」となる
+double g_NotVector[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
+
+// 基底関数 N{i,n}(t)の値を計算する
+double getBaseN(int i, int n, double t) {
+	if( n == 0 ) {
+		// n が 0 の時だけ t の値に応じて 0 または 1 を返す
+		if( t >= g_NotVector[i] && t < g_NotVector[i+1] ) {
+			return 1.0;
+		}
+		return 0;
+	} else {
+		// ★ここに必要なプログラムコードを記述する
+		// ★係数を計算するときに、ノットが重なる（分母がゼロとなる）ときには、その項を無視する。
+    if (g_NotVector [i + n] == g_NotVector [i]
+        && g_NotVector[i + n + 1] == g_NotVector[i + 1]) {
+      return 0;
+    }
+    if (g_NotVector[i + n] == g_NotVector[i]) {
+      return
+        ((g_NotVector[i + n + 1] - t) / (g_NotVector[i + n + 1] - g_NotVector[i + 1]))
+        * getBaseN (i + 1, n - 1, t);
+    } else if (g_NotVector[i + n + 1] == g_NotVector[i + 1]) {
+      return
+        ((t - g_NotVector[i]) / (g_NotVector[i + n] - g_NotVector[i]))
+        * getBaseN (i, n - 1, t);
+
+    } else {
+      return
+        (((t - g_NotVector[i]) / (g_NotVector[i + n] - g_NotVector[i]))
+         * getBaseN (i, n - 1, t))
+        +
+        (((g_NotVector[i + n + 1] - t) / (g_NotVector[i + n + 1] - g_NotVector[i + 1]))
+           * getBaseN (i + 1, n - 1, t));
+    }
+		// return 0; // この戻り値は仮のもの。適切に書き変える。
+	}
+}
+
+// 表示部分をこの関数で記入
+void display(void) {
+	glClearColor (1.0, 1.0, 1.0, 1.0);  // 消去色指定
+	glClear (GL_COLOR_BUFFER_BIT );     // 画面消去
+
+	// 制御点の描画
+	glPointSize(5);
+	glColor3d(0.0, 0.0, 0.0);
+	glBegin(GL_POINTS);
+	for(unsigned int i = 0; i < g_ControlPoints.size(); i++) {
+		glVertex2d(g_ControlPoints[i].x, g_ControlPoints[i].y);
+	}
+	glEnd();
+
+	// 制御点を結ぶ線分の描画
+	glColor3d(1.0, 0.0, 0.0);
+	glLineWidth(1);
+	glBegin(GL_LINE_STRIP);
+	for(unsigned int i = 0; i < g_ControlPoints.size(); i++) {
+		glVertex2d(g_ControlPoints[i].x, g_ControlPoints[i].y);
+	}
+	glEnd();
+
+	// ★ ここにBスプライン曲線を描画するプログラムコードを入れる
+	// ヒント1: 3次Bスプラインの場合は制御点を4つ入れるまでは何も描けない
+	// ヒント2: パラメータtの値の取り得る範囲に注意
+  int points = g_ControlPoints.size();
+  int not_num = 2 * dim + (1 + points - dim);
+  Vector2d sum = Vector2d (0.0, 0.0);
+  Vector2d prev = Vector2d (0.0, 0.0);
+  Vector2d nvector = Vector2d (0.0, 0.0);
+  bool a = false;
+  int temp = dim;
+
+  if (dim + 1 > points) {
+  } else {
+    glColor3d (0.0, 0.0, 1.0);
+    glLineWidth (1);
+    glBegin (GL_LINE_STRIP);
+    for (double t = g_NotVector [dim]; t < g_NotVector [points]; t += 0.01) {
+      sum.set (0.0, 0.0);
+      for (int i = 0; i <= points - 1; i++) {
+        sum = sum + getBaseN (i, dim, t) * g_ControlPoints [i];
+      }
+      glVertex2d (sum.x, sum.y);
+    }
+    glEnd ();
+
+    // normal vector
+    for (double t = g_NotVector [dim]; t < g_NotVector [points]; t += 0.01) {
+      sum.set (0.0, 0.0);
+      for (int i = 0; i <= points - 1; i++) {
+        sum = sum + getBaseN (i, dim, t) * g_ControlPoints [i];
+      }
+      if (a) {
+        nvector = sum - prev;
+        nvector.normalize();
+
+        glColor3d (0.0, 1.0, 1.0);
+        glLineWidth (1);
+        glBegin(GL_LINE_STRIP);
+        glVertex2d(sum.x - nvector.y * 100, sum.y + nvector.x * 100);
+        glVertex2d(sum.x, sum.y);
+        glEnd();
+      }
+      prev = sum;
+      a = true;
+    }
+
+    // points
+    for (double t = g_NotVector [dim]; t <= g_NotVector [points]; t += 0.01) {
+      sum.set (0.0, 0.0);
+      for (int i = 0; i <= points - 1; i++) {
+        sum = sum + getBaseN (i, dim, t) * g_ControlPoints [i];
+      }
+      if (t - g_NotVector [temp] > 0.01) {
+        glColor3d (1.0, 0.0, 0.0);
+        glPointSize(5.0);
+        glBegin (GL_POINTS);
+        glVertex2d (sum.x, sum.y);
+        glEnd ();
+        temp++;
+      }
+    }
+    glColor3d (1.0, 0.0, 0.0);
+    glPointSize(5.0);
+    glBegin (GL_POINTS);
+    glVertex2d (sum.x, sum.y);
+    glEnd ();
+  }
+  // graph
+  // base line
+  double line_size = 500 / g_NotVector [NUM_NOT - 1] - g_NotVector [0];
+  for (double t = g_NotVector [0]; t < g_NotVector [NUM_NOT - 1]; t += 0.01) {
+    glColor3d (0.0, 1.0, 0.0);
+    glPointSize(1.0);
+    glBegin (GL_POINTS);
+    for (int i = 0; i <  NUM_NOT - (dim + 1); ++i) {
+      glVertex2d (line_size * t + 250 , 750 - getBaseN (i, dim, t) * 100);
+    }
+    glEnd ();
+  }
+
+  glColor3d (0.0, 0.0, 0.0);
+  glLineWidth (1);
+  glBegin(GL_LINE_STRIP);
+  glVertex2d(250.0, 750.0);
+  glVertex2d(750.0, 750.0);
+  glEnd();
+	glutSwapBuffers();
+}
+
+void resizeWindow(int w, int h) {
+	h = (h == 0) ? 1 : h;
+	glViewport(0, 0, w, h);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	// ウィンドウ内の座標系設定
+	// マウスクリックの座標と描画座標が一致するような正投影
+	glOrtho(0, w, h, 0, -10, 10);
+
+	glMatrixMode(GL_MODELVIEW);
+}
+
+// キーボードイベント処理
+void keyboard(unsigned char key, int x, int y) {
+	switch (key) {
+	case 'q':
+	case 'Q':
+	case '\033':
+		exit(0);  /* '\033' は ESC の ASCII コード */
+	default:
+		break;
+	} 
+	glutPostRedisplay();
+}
+
+void keyboardspecial(int key, int x, int y) {
+  switch (key) {
+  case GLUT_KEY_UP:
+    dim++;
+    break;
+  case GLUT_KEY_DOWN:
+    if (dim != 1) {
+      dim--;
+      break;
+    }
+  default:
+    break;
+  }
+  glutPostRedisplay();
+}
+
+// マウスイベント処理
+void mouse(int button, int state, int x, int y) {
+	if(state == GLUT_DOWN) {
+		switch (button) {
+		case GLUT_LEFT_BUTTON:
+			// クリックした位置に制御点を追加
+			// ノット数を増やせばいくらでも制御点を追加できるが、今回はNUM_NOTの値で固定されているので
+			// いくらでも追加できるわけではない
+			if(g_ControlPoints.size() < NUM_NOT - (dim + 1)) {
+				g_ControlPoints.push_back(Vector2d(x, y));
+			}
+		break;
+		case GLUT_MIDDLE_BUTTON:
+		break;
+		case GLUT_RIGHT_BUTTON:
+			// 末尾の制御点の削除
+			if(!g_ControlPoints.empty()) {
+				g_ControlPoints.pop_back();
+			}
+		break;
+		default:
+		break;
+		}
+		glutPostRedisplay(); // 再描画
+	}
+}
+void motion (int x, int y) {
+  for (int i = 0; i < g_ControlPoints.size() ; ++i) {
+    if ((g_ControlPoints [i] - Vector2d (x, y)).length () < 20.0) {
+      g_ControlPoints [i] = Vector2d (x,y);
+    }
+  }
+  glutPostRedisplay(); // 再描画
+
+}
+
+// メインプログラム
+int main (int argc, char *argv[]) { 
+	glutInit(&argc, argv);          // ライブラリの初期化
+	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE); // 描画モードの指定
+	glutInitWindowSize(800 , 800);  // ウィンドウサイズを指定
+	glutCreateWindow(argv[0]);      // ウィンドウを作成
+	glutDisplayFunc(display);       // 表示関数を指定
+	glutReshapeFunc(resizeWindow);  // ウィンドウサイズが変更されたときの関数を指定
+	glutKeyboardFunc(keyboard);     // キーボードイベント処理関数を指定
+  glutSpecialUpFunc(keyboardspecial);
+  glutMotionFunc(motion);
+	glutMouseFunc(mouse);           // マウスイベント処理関数を指定
+	glutMainLoop();                 // イベント待ち
+	return 0;
+}
+   #+END_SRC
