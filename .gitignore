@@ -1,10 +1,1 @@
-*.dvi
-*.toc
-*.log
-*.xml
-*.aux
-*.bcf
-*.run.xml
-*.out
-*/ltximg/
-*/_minted-report/
+./obj_view_for_coins_mac/
