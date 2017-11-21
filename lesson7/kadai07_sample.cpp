@@ -144,7 +144,8 @@ void exportOBJ() {
 
 	// 出力用ファイルを閉じる
 	//---------------------------
-	fclose(fout);}
+	fclose(fout);
+}
 
 
 int main(int argc, char** argv) {
