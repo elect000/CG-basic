@@ -29,7 +29,8 @@ double z[NUM_U+1][NUM_V+1]; // z 座標
 // 		}
 // 	}
 // }
-// (a)
+
+// (a) 波紋
 // void setCoordinates() {
 
 // 	for(int i = 0; i < NUM_U+1; i++) {
@@ -50,7 +51,7 @@ double z[NUM_U+1][NUM_V+1]; // z 座標
 // 		}
 // 	}
 // }
-// (b)
+// (b) ガウス関数
 // void setCoordinates() {
 
 // 	for(int i = 0; i < NUM_U+1; i++) {
@@ -63,14 +64,30 @@ double z[NUM_U+1][NUM_V+1]; // z 座標
 // 			// 座標値の設定 (平面)
 // 			x[i][j] = u;
 // 			y[i][j] = v;
-// 			z[i][j] = 0.5
-//         * exp ( -1 * ((((u - 1/2) * (u - 1/2))
-//                        + ((v - 1/2) * (v - 1/2)))
-//                       / 0.1));
+// 			z[i][j] = 0.5 * exp ( -1 * ((((u - 1/2) * (u - 1/2))
+//                                   + ((v - 1/2) * (v - 1/2)))
+//                                  / 0.1));
 // 		}
 // 	}
 // }
-// (c)
+// (c) 球
+// void setCoordinates() {
+
+// 	for(int i = 0; i < NUM_U+1; i++) {
+// 		for(int j = 0; j < NUM_V+1; j++) {
+
+// 			// u と v の値を 0.0 ～ 1.0 に正規化する
+// 			double u = 1.0 / NUM_U * i * (2 * PI);
+// 			double v = 1.0 / NUM_V * j * PI - (PI / 2);
+
+// 			// 座標値の設定 (平面)
+// 			x[i][j] = cos (u) * cos (v);
+// 			y[i][j] = sin (u) * cos (v);
+// 			z[i][j] = sin (v);
+// 		}
+// 	}
+// }
+// (1) トーラスモデル
 void setCoordinates() {
 
 	for(int i = 0; i < NUM_U+1; i++) {
