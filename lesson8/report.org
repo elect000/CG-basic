@@ -1,0 +1,338 @@
+# This is a Bibtex reference
+#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:t arch:headline ^:nil
+#+OPTIONS: author:t broken-links:nil c:nil creator:nil
+#+OPTIONS: d:(not "LOGBOOK") date:nil e:nil email:nil f:t inline:t num:t
+#+OPTIONS: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
+#+OPTIONS: timestamp:nil title:t toc:nil todo:t |:t
+#+TITLE: CG基礎 課題7
+#+DATE: 
+#+AUTHOR: 情報科学類二年 江畑 拓哉(201611350)
+#+LANGUAGE: en
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+#+CREATOR: Emacs 24.5.1 (Org mode 9.1.1)
+#+LATEX_CLASS: koma-article
+#+LATEX_CLASS_OPTIONS: 
+#+LATEX_HEADER_EXTRA: \bibliography{reference}
+#+LaTeX_CLASS_OPTIONS:
+#+DESCRIPTION:
+#+KEYWORDS:
+#+SUBTITLE:
+#+STARTUP: indent overview inlineimages
+
+* 動作環境の説明
+- OS
+  Manjaro Linux 17.0.6 Gellivara
+- コンパイル
+  g++ (GCC) 7.2.0
+  Copyright (C) 2017 Free Software Foundation, Inc.
+- コーディング
+  Spacemacs 0.200.9 (Emacs25.3.1)
+* ソースコード
+　はじめに今回の課題で用いたソースコードを示す。変数flagなどを変更することでそれぞれの課題の実行が行われている。
+#+BEGIN_SRC c++
+#include <GL/glut.h>
+#include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <algorithm> // 小さい方の値を返す std::min 関数を使うため
+
+class Vector3d {
+public:
+  double x, y, z;
+  Vector3d() { x = y = z = 0; }
+  Vector3d(double _x, double _y, double _z) { x = _x; y = _y; z = _z; }
+  void set(double _x, double _y, double _z) { x = _x; y = _y; z = _z; }
+
+  // 長さを1に正規化する
+  void normalize() {
+    double len = length();
+    x /= len; y /= len; z /= len;
+  }
+
+  // 長さを返す
+  double length() { return sqrt(x * x + y * y + z * z); }
+
+  // s倍する
+  void scale(const double s) { x *= s; y *= s; z *= s; }
+
+  // 加算の定義
+  Vector3d operator+(Vector3d v) { return Vector3d(x + v.x, y + v.y, z + v.z); }
+
+  // 減算の定義
+  Vector3d operator-(Vector3d v) { return Vector3d(x - v.x, y - v.y, z - v.z); }
+
+  // 内積の定義
+  double operator*(Vector3d v) { return x * v.x + y* v.y + z * v.z; }
+
+  // 外積の定義
+  Vector3d operator%(Vector3d v) { return Vector3d(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x); }
+
+  // 代入演算の定義
+  Vector3d& operator=(const Vector3d& v){ x = v.x; y = v.y; z = v.z; return (*this); }
+
+  // 加算代入の定義
+  Vector3d& operator+=(const Vector3d& v) { x += v.x; y += v.y; z += v.z; return (*this); }
+
+  // 減算代入の定義
+  Vector3d& operator-=(const Vector3d& v) { x -= v.x; y -= v.y; z -= v.z; return (*this); }
+
+  // 値を出力する
+  void print() { printf("Vector3d(%f %f %f)\n", x, y, z); }
+};
+// マイナスの符号の付いたベクトルを扱えるようにするための定義 例：b=(-a); のように記述できる
+Vector3d operator-( const Vector3d& v ) { return( Vector3d( -v.x, -v.y, -v.z ) ); }
+
+// ベクトルと実数の積を扱えるようにするための定義 例： c=5*a+2*b; c=b*3; のように記述できる
+Vector3d operator*( const double& k, const Vector3d& v ) { return( Vector3d( k*v.x, k*v.y, k*v.z ) );}
+Vector3d operator*( const Vector3d& v, const double& k ) { return( Vector3d( v.x*k, v.y*k, v.z*k ) );}
+
+// ベクトルを実数で割る操作を扱えるようにするための定義 例： c=a/2.3; のように記述できる
+Vector3d operator/( const Vector3d& v, const double& k ) { return( Vector3d( v.x/k, v.y/k, v.z/k ) );}
+
+
+// 球体
+class Sphere {
+public:
+  Vector3d center; // 中心座標
+  double radius;   // 半径
+  double cR, cG, cB;  // Red, Green, Blue 値 0.0〜1.0
+
+  Sphere(double x, double y, double z, double r,
+    double cr, double cg, double cb) {
+      center.x = x;
+      center.y = y;
+      center.z = z;
+      radius = r;
+      cR = cr;
+      cG = cg;
+      cB = cb;
+  }
+
+  // 点pを通り、v方向のRayとの交わりを判定する。
+  // 交点が p+tv として表せる場合の t の値を返す。交わらない場合は-1を返す
+  double getIntersec(Vector3d &p, Vector3d &v) {
+    // A*t^2 + B*t + C = 0 の形で表す
+    double A = v.x * v.x + v.y * v.y + v.z * v.z;
+    double B = 2.0 * (p.x * v.x - v.x * center.x +
+      p.y * v.y - v.y * center.y +
+      p.z * v.z- v.z * center.z);
+    double C = p.x * p.x - 2 * p.x * center.x + center.x * center.x +
+      p.y * p.y - 2 * p.y * center.y + center.y * center.y +
+      p.z * p.z - 2 * p.z * center.z + center.z * center.z -
+      radius * radius;
+    double D = B * B - 4 * A * C; // 判別式
+
+    if (D >= 0) { // 交わる
+      double t1 = (-B - sqrt(D)) / (2.0 * A);
+      double t2 = (-B + sqrt(D)) / (2.0 * A);
+      return t1 < t2 ? t1 : t2; // 小さいほうのtの値を返す
+    } else { // 交わらない
+      return -1.0;
+    }
+  }
+};
+
+
+int halfWidth;    // 描画領域の横幅/2
+int halfHeight;   // 描画領域の縦幅/2
+
+// 各種定数
+double d = 1000;  // 視点と投影面との距離
+double Kd = 0.8;  // 拡散反射定数
+// double Kd = 0.6;  // 8-3-8
+// double Kd = 1.0;  // 8-3-9
+double Ks = 0.8;  // 鏡面反射定数
+// double Ks = 0.6;  // 8-3-10
+// double Ks = 1.0;  // 8-3-11
+// double Ks = 4.0;  // 8-3-12
+double Iin = 1.0; // 入射光の強さ
+// double Iin = 0.5; // 8-3-6
+// double Iin = 2.0; // 8-3-7
+double Ia  = 0.2; // 環境光
+// double Ia  = 0.1; // 8-3-4
+// double Ia  = 0.4; // 8-3-5
+
+Vector3d viewPosition(0, 0, 0); // 視点位置
+Vector3d lightDirection(-2, -4, -2); // 入射光の進行方向
+// Vector3d lightDirection(0, -4, -2); // 8-3-1
+// Vector3d lightDirection(0, -4, -2); // 8-3-2
+// Vector3d lightDirection(-2, 0, -2); // 8-3-3
+
+// レンダリングする球体
+Sphere sphere(0.0, 0.0, -1500, // 中心座標
+        150.0,           // 半径
+        0.2, 0.9, 0.9);  // RGB値
+
+
+// 描画を行う
+void display(void) {
+
+  glClear(GL_COLOR_BUFFER_BIT); // 描画内容のクリア
+
+  // ピクセル単位で描画色を決定するループ処理
+  for(int y = (-halfHeight); y <= halfHeight; y++ ) {
+    for(int x = (-halfWidth); x <= halfWidth; x++ ) {
+
+      Vector3d ray(x - viewPosition.x, y - viewPosition.y, -d - viewPosition.z); // 原点からスクリーン上のピクセルへ飛ばすレイの方向
+      ray.normalize(); // レイの長さの正規化
+
+      // レイを飛ばして球との交点を求める
+      double t = sphere.getIntersec(viewPosition, ray);
+
+      if(t > 0) { // 交点がある
+        double Is = 0; // 鏡面反射光
+        double Id = 0; // 拡散反射光
+        // ----------------------------------------------------------------------------------
+        // ★ここで Is および Id の値を計算する
+        int flag = 1; // 0: 拡散反射光 <=> 1: 鏡面反射光
+        Vector3d P = viewPosition + t * ray;
+        Vector3d N = P - sphere.center;
+        N.normalize();
+        if (flag >= 0) {
+          double cos_Id = N * (-1 * lightDirection);
+          if(cos_Id > 0) {
+            Id = Iin * Kd * cos_Id;
+          }
+        } if(flag >= 1) {
+          int n = 20;
+          // int n = 2; // 8-3-13
+          // int n = 40; // 8-3-14
+          double a = -1 * (lightDirection * N);
+          Vector3d R = lightDirection + 2 * a * N;
+          Vector3d V = P - viewPosition;
+          R.normalize();
+          V.normalize();
+          double cos_Is = -1 * R * V;
+          if (cos_Is > 0) {
+            Is = Iin * Ks * pow(cos_Is, n);
+          }
+        }
+        // ---------------------------------------------------------------------------------
+        double I = Id + Is + Ia;
+        double r = std::min(I * sphere.cR, 1.0); // 1.0 を超えないようにする
+        double g = std::min(I * sphere.cG, 1.0); // 1.0 を超えないようにする
+        double b = std::min(I * sphere.cB, 1.0); // 1.0 を超えないようにする
+
+        // 描画色の設定
+        glColor3d(r, g, b);
+
+      } else { // 交点が無い
+
+        // 描画色を黒にする
+        glColor3f(0.0f, 0.0f, 0.0f);
+      }
+
+      // (x, y) の画素を描画
+      glBegin(GL_POINTS);
+      glVertex2i(x, y);
+      glEnd();
+    }
+  }
+  glFlush();
+}
+
+void resize(int w, int h) {
+  if (h < 1) return;
+  glViewport(0, 0, w, h);
+  halfWidth = w/2;
+  halfHeight = h/2;
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+
+  // ウィンドウ内の座標系設定
+  glOrtho( -halfWidth, halfWidth, -halfHeight, halfHeight, 0.0, 1.0);
+  glMatrixMode(GL_MODELVIEW);
+}
+
+void keyboard(unsigned char key, int x, int y) {
+  switch (key) {
+    case 27: exit(0);  /* ESC code */
+  }
+  glutPostRedisplay();
+}
+
+int main(int argc, char** argv) {
+  lightDirection.normalize();
+
+  glutInit(&argc, argv);
+  glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+  glutInitWindowSize(400,400);
+  glutCreateWindow(argv[0]);
+  glClearColor(1.0, 1.0, 1.0, 1.0);
+  glShadeModel(GL_FLAT);
+
+  glutDisplayFunc(display);
+  glutReshapeFunc(resize);
+  glutKeyboardFunc(keyboard);
+  glutMainLoop();
+
+  return 0;
+
+}
+#+END_SRC
+* 課題1
+  153行目の変数flagを0にすることで実行可能である。
+  #+ATTR_LATEX: :width 6cm
+  [[~/Pictures/8-1.png]]
+* 課題2
+  153行目の変数flagを1にすることで実行可能である。
+  #+ATTR_LATEX: :width 6cm
+  [[~/Pictures/8-2.png]]
+* 課題3
+** 1
+125行目 ~Vector3d lightDirection(0, 0, -2); // 8-3-1~ を有効にした場合、入射光が手前からのものになった。
+#+ATTR_LATEX: :width 6cm
+[[~/Pictures/8-3-1.png]]
+** 2
+126行目 ~Vector3d lightDirection(0, -4, -2); // 8-3-2~ を有効にした場合、入射光が上からのものになった。
+#+ATTR_LATEX: :width 6cm
+[[~/Pictures/8-3-2.png]]
+** 3
+127行目 ~Vector3d lightDirection(-2, 0, -2); // 8-3-3~ を有効にした場合、入射光が右からのものになった。
+#+ATTR_LATEX: :width 6cm
+[[~/Pictures/8-3-3.png]]
+** 4
+120行目 ~double Ia  = 0.1; // 8-3-4~ を有効にした場合、全体的に暗くなった。
+#+ATTR_LATEX: :width 6cm
+[[~/Pictures/8-3-4.png]]
+** 5
+121行目 ~double Ia  = 0.4; // 8-3-5~ を有効にした場合、全体的に明るくなった。
+#+ATTR_LATEX: :width 6cm
+[[~/Pictures/8-3-5.png]]
+** 6
+117行目 ~double Iin = 0.5; // 8-3-6~ を有効にした場合、全体的に暗くなった。(入射光が暗くなったが、影も当然暗いため全体的に暗く感じた)
+#+ATTR_LATEX: :width 6cm
+[[~/Pictures/8-3-6.png]]
+** 7
+118行目 ~double Iin = 2.0; // 8-3-6~ を有効にした場合、入射光が強くなった。
+#+ATTR_LATEX: :width 6cm
+[[~/Pictures/8-3-7.png]]
+** 8
+110行目 ~double Kd = 0.6;  // 8-3-8~ を有効にした場合、鏡面部分を除いて暗くなった。
+#+ATTR_LATEX: :width 6cm
+[[~/Pictures/8-3-8.png]]
+** 9
+111行目 ~double Kd = 1.0;  // 8-3-9~ を有効にした場合、鏡面部分を除いて明るくなった。
+#+ATTR_LATEX: :width 6cm
+[[~/Pictures/8-3-9.png]]
+** 10
+113行目 ~double Ks = 0.6;  // 8-3-10~ を有効にした場合、鏡面部分がほんのり暗くなった。
+#+ATTR_LATEX: :width 6cm
+[[~/Pictures/8-3-10.png]]
+** 11
+114行目 ~double Ks = 1.0;  // 8-3-11~ を有効にした場合、鏡面部分がほんのり明るくなった。
+#+ATTR_LATEX: :width 6cm
+[[~/Pictures/8-3-11.png]]
+** 12
+上の変化が少なかったため、追加した。115行目 ~double Ks = 4.0;  // 8-3-12~ を有効にした場合、鏡面部分がはっきり明るくなった。
+#+ATTR_LATEX: :width 6cm
+[[~/Pictures/8-3-12.png]]
+** 13
+166行目 ~int n = 2; // 8-3-13~ を有効にした場合、鏡面部分が潰れてぼやけて見えた。
+#+ATTR_LATEX: :width 6cm
+[[~/Pictures/8-3-13.png]]
+** 14
+167行目 ~int n = 40; // 8-3-14~ を有効にした場合、鏡面部分が鋭くはっきりと見えた。
+#+ATTR_LATEX: :width 6cm
+[[~/Pictures/8-3-14.png]]

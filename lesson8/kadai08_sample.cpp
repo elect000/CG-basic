@@ -107,12 +107,24 @@ int halfHeight;   // 描画領域の縦幅/2
 // 各種定数
 double d = 1000;  // 視点と投影面との距離
 double Kd = 0.8;  // 拡散反射定数
+// double Kd = 0.6;  // 8-3-8
+// double Kd = 1.0;  // 8-3-9
 double Ks = 0.8;  // 鏡面反射定数
+// double Ks = 0.6;  // 8-3-10
+// double Ks = 1.0;  // 8-3-11
+// double Ks = 4.0;  // 8-3-12
 double Iin = 1.0; // 入射光の強さ
+// double Iin = 0.5; // 8-3-6
+// double Iin = 2.0; // 8-3-7
 double Ia  = 0.2; // 環境光
+// double Ia  = 0.1; // 8-3-4
+// double Ia  = 0.4; // 8-3-5
 
 Vector3d viewPosition(0, 0, 0); // 視点位置
 Vector3d lightDirection(-2, -4, -2); // 入射光の進行方向
+// Vector3d lightDirection(0, 0, -2); // 8-3-1
+// Vector3d lightDirection(0, -4, -2); // 8-3-2
+// Vector3d lightDirection(-2, 0, -2); // 8-3-3
 
 // レンダリングする球体
 Sphere sphere(0.0, 0.0, -1500, // 中心座標
@@ -138,7 +150,7 @@ void display(void) {
       if(t > 0) { // 交点がある
         double Is = 0; // 鏡面反射光
         double Id = 0; // 拡散反射光
-
+        // ----------------------------------------------------------------------------------
         // ★ここで Is および Id の値を計算する
         int flag = 1; // 0: 拡散反射光 <=> 1: 鏡面反射光
         Vector3d P = viewPosition + t * ray;
@@ -151,6 +163,8 @@ void display(void) {
           }
         } if(flag >= 1) {
           int n = 20;
+          // int n = 2; // 8-3-13
+          // int n = 40; // 8-3-14
           double a = -1 * (lightDirection * N);
           Vector3d R = lightDirection + 2 * a * N;
           Vector3d V = P - viewPosition;
@@ -161,6 +175,7 @@ void display(void) {
             Is = Iin * Ks * pow(cos_Is, n);
           }
         }
+        // ---------------------------------------------------------------------------------
         double I = Id + Is + Ia;
         double r = std::min(I * sphere.cR, 1.0); // 1.0 を超えないようにする
         double g = std::min(I * sphere.cG, 1.0); // 1.0 を超えないようにする

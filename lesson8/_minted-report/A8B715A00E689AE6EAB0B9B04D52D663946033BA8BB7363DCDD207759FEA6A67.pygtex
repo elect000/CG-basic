@@ -1,0 +1,241 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+cp}{\PYGZsh{}include} \PYG{c+cpf}{\PYGZlt{}GL/glut.h\PYGZgt{}}
+\PYG{c+cp}{\PYGZsh{}include} \PYG{c+cpf}{\PYGZlt{}math.h\PYGZgt{}}
+\PYG{c+cp}{\PYGZsh{}include} \PYG{c+cpf}{\PYGZlt{}stdlib.h\PYGZgt{}}
+\PYG{c+cp}{\PYGZsh{}include} \PYG{c+cpf}{\PYGZlt{}stdio.h\PYGZgt{}}
+\PYG{c+cp}{\PYGZsh{}include} \PYG{c+cpf}{\PYGZlt{}algorithm\PYGZgt{} // 小さい方の値を返す std::min 関数を使うため}
+
+\PYG{k}{class} \PYG{n+nc}{Vector3d} \PYG{p}{\PYGZob{}}
+\PYG{k}{public}\PYG{o}{:}
+  \PYG{k+kt}{double} \PYG{n}{x}\PYG{p}{,} \PYG{n}{y}\PYG{p}{,} \PYG{n}{z}\PYG{p}{;}
+  \PYG{n}{Vector3d}\PYG{p}{()} \PYG{p}{\PYGZob{}} \PYG{n}{x} \PYG{o}{=} \PYG{n}{y} \PYG{o}{=} \PYG{n}{z} \PYG{o}{=} \PYG{l+m+mi}{0}\PYG{p}{;} \PYG{p}{\PYGZcb{}}
+  \PYG{n}{Vector3d}\PYG{p}{(}\PYG{k+kt}{double} \PYG{n}{\PYGZus{}x}\PYG{p}{,} \PYG{k+kt}{double} \PYG{n}{\PYGZus{}y}\PYG{p}{,} \PYG{k+kt}{double} \PYG{n}{\PYGZus{}z}\PYG{p}{)} \PYG{p}{\PYGZob{}} \PYG{n}{x} \PYG{o}{=} \PYG{n}{\PYGZus{}x}\PYG{p}{;} \PYG{n}{y} \PYG{o}{=} \PYG{n}{\PYGZus{}y}\PYG{p}{;} \PYG{n}{z} \PYG{o}{=} \PYG{n}{\PYGZus{}z}\PYG{p}{;} \PYG{p}{\PYGZcb{}}
+  \PYG{k+kt}{void} \PYG{n}{set}\PYG{p}{(}\PYG{k+kt}{double} \PYG{n}{\PYGZus{}x}\PYG{p}{,} \PYG{k+kt}{double} \PYG{n}{\PYGZus{}y}\PYG{p}{,} \PYG{k+kt}{double} \PYG{n}{\PYGZus{}z}\PYG{p}{)} \PYG{p}{\PYGZob{}} \PYG{n}{x} \PYG{o}{=} \PYG{n}{\PYGZus{}x}\PYG{p}{;} \PYG{n}{y} \PYG{o}{=} \PYG{n}{\PYGZus{}y}\PYG{p}{;} \PYG{n}{z} \PYG{o}{=} \PYG{n}{\PYGZus{}z}\PYG{p}{;} \PYG{p}{\PYGZcb{}}
+
+  \PYG{c+c1}{// 長さを1に正規化する}
+  \PYG{k+kt}{void} \PYG{n}{normalize}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+    \PYG{k+kt}{double} \PYG{n}{len} \PYG{o}{=} \PYG{n}{length}\PYG{p}{();}
+    \PYG{n}{x} \PYG{o}{/=} \PYG{n}{len}\PYG{p}{;} \PYG{n}{y} \PYG{o}{/=} \PYG{n}{len}\PYG{p}{;} \PYG{n}{z} \PYG{o}{/=} \PYG{n}{len}\PYG{p}{;}
+  \PYG{p}{\PYGZcb{}}
+
+  \PYG{c+c1}{// 長さを返す}
+  \PYG{k+kt}{double} \PYG{n}{length}\PYG{p}{()} \PYG{p}{\PYGZob{}} \PYG{k}{return} \PYG{n}{sqrt}\PYG{p}{(}\PYG{n}{x} \PYG{o}{*} \PYG{n}{x} \PYG{o}{+} \PYG{n}{y} \PYG{o}{*} \PYG{n}{y} \PYG{o}{+} \PYG{n}{z} \PYG{o}{*} \PYG{n}{z}\PYG{p}{);} \PYG{p}{\PYGZcb{}}
+
+  \PYG{c+c1}{// s倍する}
+  \PYG{k+kt}{void} \PYG{n}{scale}\PYG{p}{(}\PYG{k}{const} \PYG{k+kt}{double} \PYG{n}{s}\PYG{p}{)} \PYG{p}{\PYGZob{}} \PYG{n}{x} \PYG{o}{*=} \PYG{n}{s}\PYG{p}{;} \PYG{n}{y} \PYG{o}{*=} \PYG{n}{s}\PYG{p}{;} \PYG{n}{z} \PYG{o}{*=} \PYG{n}{s}\PYG{p}{;} \PYG{p}{\PYGZcb{}}
+
+  \PYG{c+c1}{// 加算の定義}
+  \PYG{n}{Vector3d} \PYG{k}{operator}\PYG{o}{+}\PYG{p}{(}\PYG{n}{Vector3d} \PYG{n}{v}\PYG{p}{)} \PYG{p}{\PYGZob{}} \PYG{k}{return} \PYG{n}{Vector3d}\PYG{p}{(}\PYG{n}{x} \PYG{o}{+} \PYG{n}{v}\PYG{p}{.}\PYG{n}{x}\PYG{p}{,} \PYG{n}{y} \PYG{o}{+} \PYG{n}{v}\PYG{p}{.}\PYG{n}{y}\PYG{p}{,} \PYG{n}{z} \PYG{o}{+} \PYG{n}{v}\PYG{p}{.}\PYG{n}{z}\PYG{p}{);} \PYG{p}{\PYGZcb{}}
+
+  \PYG{c+c1}{// 減算の定義}
+  \PYG{n}{Vector3d} \PYG{k}{operator}\PYG{o}{\PYGZhy{}}\PYG{p}{(}\PYG{n}{Vector3d} \PYG{n}{v}\PYG{p}{)} \PYG{p}{\PYGZob{}} \PYG{k}{return} \PYG{n}{Vector3d}\PYG{p}{(}\PYG{n}{x} \PYG{o}{\PYGZhy{}} \PYG{n}{v}\PYG{p}{.}\PYG{n}{x}\PYG{p}{,} \PYG{n}{y} \PYG{o}{\PYGZhy{}} \PYG{n}{v}\PYG{p}{.}\PYG{n}{y}\PYG{p}{,} \PYG{n}{z} \PYG{o}{\PYGZhy{}} \PYG{n}{v}\PYG{p}{.}\PYG{n}{z}\PYG{p}{);} \PYG{p}{\PYGZcb{}}
+
+  \PYG{c+c1}{// 内積の定義}
+  \PYG{k+kt}{double} \PYG{k}{operator}\PYG{o}{*}\PYG{p}{(}\PYG{n}{Vector3d} \PYG{n}{v}\PYG{p}{)} \PYG{p}{\PYGZob{}} \PYG{k}{return} \PYG{n}{x} \PYG{o}{*} \PYG{n}{v}\PYG{p}{.}\PYG{n}{x} \PYG{o}{+} \PYG{n}{y}\PYG{o}{*} \PYG{n}{v}\PYG{p}{.}\PYG{n}{y} \PYG{o}{+} \PYG{n}{z} \PYG{o}{*} \PYG{n}{v}\PYG{p}{.}\PYG{n}{z}\PYG{p}{;} \PYG{p}{\PYGZcb{}}
+
+  \PYG{c+c1}{// 外積の定義}
+  \PYG{n}{Vector3d} \PYG{k}{operator}\PYG{o}{\PYGZpc{}}\PYG{p}{(}\PYG{n}{Vector3d} \PYG{n}{v}\PYG{p}{)} \PYG{p}{\PYGZob{}} \PYG{k}{return} \PYG{n}{Vector3d}\PYG{p}{(}\PYG{n}{y} \PYG{o}{*} \PYG{n}{v}\PYG{p}{.}\PYG{n}{z} \PYG{o}{\PYGZhy{}} \PYG{n}{z} \PYG{o}{*} \PYG{n}{v}\PYG{p}{.}\PYG{n}{y}\PYG{p}{,} \PYG{n}{z} \PYG{o}{*} \PYG{n}{v}\PYG{p}{.}\PYG{n}{x} \PYG{o}{\PYGZhy{}} \PYG{n}{x} \PYG{o}{*} \PYG{n}{v}\PYG{p}{.}\PYG{n}{z}\PYG{p}{,} \PYG{n}{x} \PYG{o}{*} \PYG{n}{v}\PYG{p}{.}\PYG{n}{y} \PYG{o}{\PYGZhy{}} \PYG{n}{y} \PYG{o}{*} \PYG{n}{v}\PYG{p}{.}\PYG{n}{x}\PYG{p}{);} \PYG{p}{\PYGZcb{}}
+
+  \PYG{c+c1}{// 代入演算の定義}
+  \PYG{n}{Vector3d}\PYG{o}{\PYGZam{}} \PYG{k}{operator}\PYG{o}{=}\PYG{p}{(}\PYG{k}{const} \PYG{n}{Vector3d}\PYG{o}{\PYGZam{}} \PYG{n}{v}\PYG{p}{)\PYGZob{}} \PYG{n}{x} \PYG{o}{=} \PYG{n}{v}\PYG{p}{.}\PYG{n}{x}\PYG{p}{;} \PYG{n}{y} \PYG{o}{=} \PYG{n}{v}\PYG{p}{.}\PYG{n}{y}\PYG{p}{;} \PYG{n}{z} \PYG{o}{=} \PYG{n}{v}\PYG{p}{.}\PYG{n}{z}\PYG{p}{;} \PYG{k}{return} \PYG{p}{(}\PYG{o}{*}\PYG{k}{this}\PYG{p}{);} \PYG{p}{\PYGZcb{}}
+
+  \PYG{c+c1}{// 加算代入の定義}
+  \PYG{n}{Vector3d}\PYG{o}{\PYGZam{}} \PYG{k}{operator}\PYG{o}{+=}\PYG{p}{(}\PYG{k}{const} \PYG{n}{Vector3d}\PYG{o}{\PYGZam{}} \PYG{n}{v}\PYG{p}{)} \PYG{p}{\PYGZob{}} \PYG{n}{x} \PYG{o}{+=} \PYG{n}{v}\PYG{p}{.}\PYG{n}{x}\PYG{p}{;} \PYG{n}{y} \PYG{o}{+=} \PYG{n}{v}\PYG{p}{.}\PYG{n}{y}\PYG{p}{;} \PYG{n}{z} \PYG{o}{+=} \PYG{n}{v}\PYG{p}{.}\PYG{n}{z}\PYG{p}{;} \PYG{k}{return} \PYG{p}{(}\PYG{o}{*}\PYG{k}{this}\PYG{p}{);} \PYG{p}{\PYGZcb{}}
+
+  \PYG{c+c1}{// 減算代入の定義}
+  \PYG{n}{Vector3d}\PYG{o}{\PYGZam{}} \PYG{k}{operator}\PYG{o}{\PYGZhy{}=}\PYG{p}{(}\PYG{k}{const} \PYG{n}{Vector3d}\PYG{o}{\PYGZam{}} \PYG{n}{v}\PYG{p}{)} \PYG{p}{\PYGZob{}} \PYG{n}{x} \PYG{o}{\PYGZhy{}=} \PYG{n}{v}\PYG{p}{.}\PYG{n}{x}\PYG{p}{;} \PYG{n}{y} \PYG{o}{\PYGZhy{}=} \PYG{n}{v}\PYG{p}{.}\PYG{n}{y}\PYG{p}{;} \PYG{n}{z} \PYG{o}{\PYGZhy{}=} \PYG{n}{v}\PYG{p}{.}\PYG{n}{z}\PYG{p}{;} \PYG{k}{return} \PYG{p}{(}\PYG{o}{*}\PYG{k}{this}\PYG{p}{);} \PYG{p}{\PYGZcb{}}
+
+  \PYG{c+c1}{// 値を出力する}
+  \PYG{k+kt}{void} \PYG{n}{print}\PYG{p}{()} \PYG{p}{\PYGZob{}} \PYG{n}{printf}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}Vector3d(\PYGZpc{}f \PYGZpc{}f \PYGZpc{}f)}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{x}\PYG{p}{,} \PYG{n}{y}\PYG{p}{,} \PYG{n}{z}\PYG{p}{);} \PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{};}
+\PYG{c+c1}{// マイナスの符号の付いたベクトルを扱えるようにするための定義 例：b=(\PYGZhy{}a); のように記述できる}
+\PYG{n}{Vector3d} \PYG{k}{operator}\PYG{o}{\PYGZhy{}}\PYG{p}{(} \PYG{k}{const} \PYG{n}{Vector3d}\PYG{o}{\PYGZam{}} \PYG{n}{v} \PYG{p}{)} \PYG{p}{\PYGZob{}} \PYG{k}{return}\PYG{p}{(} \PYG{n}{Vector3d}\PYG{p}{(} \PYG{o}{\PYGZhy{}}\PYG{n}{v}\PYG{p}{.}\PYG{n}{x}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{n}{v}\PYG{p}{.}\PYG{n}{y}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{n}{v}\PYG{p}{.}\PYG{n}{z} \PYG{p}{)} \PYG{p}{);} \PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// ベクトルと実数の積を扱えるようにするための定義 例： c=5*a+2*b; c=b*3; のように記述できる}
+\PYG{n}{Vector3d} \PYG{k}{operator}\PYG{o}{*}\PYG{p}{(} \PYG{k}{const} \PYG{k+kt}{double}\PYG{o}{\PYGZam{}} \PYG{n}{k}\PYG{p}{,} \PYG{k}{const} \PYG{n}{Vector3d}\PYG{o}{\PYGZam{}} \PYG{n}{v} \PYG{p}{)} \PYG{p}{\PYGZob{}} \PYG{k}{return}\PYG{p}{(} \PYG{n}{Vector3d}\PYG{p}{(} \PYG{n}{k}\PYG{o}{*}\PYG{n}{v}\PYG{p}{.}\PYG{n}{x}\PYG{p}{,} \PYG{n}{k}\PYG{o}{*}\PYG{n}{v}\PYG{p}{.}\PYG{n}{y}\PYG{p}{,} \PYG{n}{k}\PYG{o}{*}\PYG{n}{v}\PYG{p}{.}\PYG{n}{z} \PYG{p}{)} \PYG{p}{);\PYGZcb{}}
+\PYG{n}{Vector3d} \PYG{k}{operator}\PYG{o}{*}\PYG{p}{(} \PYG{k}{const} \PYG{n}{Vector3d}\PYG{o}{\PYGZam{}} \PYG{n}{v}\PYG{p}{,} \PYG{k}{const} \PYG{k+kt}{double}\PYG{o}{\PYGZam{}} \PYG{n}{k} \PYG{p}{)} \PYG{p}{\PYGZob{}} \PYG{k}{return}\PYG{p}{(} \PYG{n}{Vector3d}\PYG{p}{(} \PYG{n}{v}\PYG{p}{.}\PYG{n}{x}\PYG{o}{*}\PYG{n}{k}\PYG{p}{,} \PYG{n}{v}\PYG{p}{.}\PYG{n}{y}\PYG{o}{*}\PYG{n}{k}\PYG{p}{,} \PYG{n}{v}\PYG{p}{.}\PYG{n}{z}\PYG{o}{*}\PYG{n}{k} \PYG{p}{)} \PYG{p}{);\PYGZcb{}}
+
+\PYG{c+c1}{// ベクトルを実数で割る操作を扱えるようにするための定義 例： c=a/2.3; のように記述できる}
+\PYG{n}{Vector3d} \PYG{k}{operator}\PYG{o}{/}\PYG{p}{(} \PYG{k}{const} \PYG{n}{Vector3d}\PYG{o}{\PYGZam{}} \PYG{n}{v}\PYG{p}{,} \PYG{k}{const} \PYG{k+kt}{double}\PYG{o}{\PYGZam{}} \PYG{n}{k} \PYG{p}{)} \PYG{p}{\PYGZob{}} \PYG{k}{return}\PYG{p}{(} \PYG{n}{Vector3d}\PYG{p}{(} \PYG{n}{v}\PYG{p}{.}\PYG{n}{x}\PYG{o}{/}\PYG{n}{k}\PYG{p}{,} \PYG{n}{v}\PYG{p}{.}\PYG{n}{y}\PYG{o}{/}\PYG{n}{k}\PYG{p}{,} \PYG{n}{v}\PYG{p}{.}\PYG{n}{z}\PYG{o}{/}\PYG{n}{k} \PYG{p}{)} \PYG{p}{);\PYGZcb{}}
+
+
+\PYG{c+c1}{// 球体}
+\PYG{k}{class} \PYG{n+nc}{Sphere} \PYG{p}{\PYGZob{}}
+\PYG{k}{public}\PYG{o}{:}
+  \PYG{n}{Vector3d} \PYG{n}{center}\PYG{p}{;} \PYG{c+c1}{// 中心座標}
+  \PYG{k+kt}{double} \PYG{n}{radius}\PYG{p}{;}   \PYG{c+c1}{// 半径}
+  \PYG{k+kt}{double} \PYG{n}{cR}\PYG{p}{,} \PYG{n}{cG}\PYG{p}{,} \PYG{n}{cB}\PYG{p}{;}  \PYG{c+c1}{// Red, Green, Blue 値 0.0～1.0}
+
+  \PYG{n}{Sphere}\PYG{p}{(}\PYG{k+kt}{double} \PYG{n}{x}\PYG{p}{,} \PYG{k+kt}{double} \PYG{n}{y}\PYG{p}{,} \PYG{k+kt}{double} \PYG{n}{z}\PYG{p}{,} \PYG{k+kt}{double} \PYG{n}{r}\PYG{p}{,}
+    \PYG{k+kt}{double} \PYG{n}{cr}\PYG{p}{,} \PYG{k+kt}{double} \PYG{n}{cg}\PYG{p}{,} \PYG{k+kt}{double} \PYG{n}{cb}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+      \PYG{n}{center}\PYG{p}{.}\PYG{n}{x} \PYG{o}{=} \PYG{n}{x}\PYG{p}{;}
+      \PYG{n}{center}\PYG{p}{.}\PYG{n}{y} \PYG{o}{=} \PYG{n}{y}\PYG{p}{;}
+      \PYG{n}{center}\PYG{p}{.}\PYG{n}{z} \PYG{o}{=} \PYG{n}{z}\PYG{p}{;}
+      \PYG{n}{radius} \PYG{o}{=} \PYG{n}{r}\PYG{p}{;}
+      \PYG{n}{cR} \PYG{o}{=} \PYG{n}{cr}\PYG{p}{;}
+      \PYG{n}{cG} \PYG{o}{=} \PYG{n}{cg}\PYG{p}{;}
+      \PYG{n}{cB} \PYG{o}{=} \PYG{n}{cb}\PYG{p}{;}
+  \PYG{p}{\PYGZcb{}}
+
+  \PYG{c+c1}{// 点pを通り、v方向のRayとの交わりを判定する。}
+  \PYG{c+c1}{// 交点が p+tv として表せる場合の t の値を返す。交わらない場合は\PYGZhy{}1を返す}
+  \PYG{k+kt}{double} \PYG{n}{getIntersec}\PYG{p}{(}\PYG{n}{Vector3d} \PYG{o}{\PYGZam{}}\PYG{n}{p}\PYG{p}{,} \PYG{n}{Vector3d} \PYG{o}{\PYGZam{}}\PYG{n}{v}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+    \PYG{c+c1}{// A*t\PYGZca{}2 + B*t + C = 0 の形で表す}
+    \PYG{k+kt}{double} \PYG{n}{A} \PYG{o}{=} \PYG{n}{v}\PYG{p}{.}\PYG{n}{x} \PYG{o}{*} \PYG{n}{v}\PYG{p}{.}\PYG{n}{x} \PYG{o}{+} \PYG{n}{v}\PYG{p}{.}\PYG{n}{y} \PYG{o}{*} \PYG{n}{v}\PYG{p}{.}\PYG{n}{y} \PYG{o}{+} \PYG{n}{v}\PYG{p}{.}\PYG{n}{z} \PYG{o}{*} \PYG{n}{v}\PYG{p}{.}\PYG{n}{z}\PYG{p}{;}
+    \PYG{k+kt}{double} \PYG{n}{B} \PYG{o}{=} \PYG{l+m+mf}{2.0} \PYG{o}{*} \PYG{p}{(}\PYG{n}{p}\PYG{p}{.}\PYG{n}{x} \PYG{o}{*} \PYG{n}{v}\PYG{p}{.}\PYG{n}{x} \PYG{o}{\PYGZhy{}} \PYG{n}{v}\PYG{p}{.}\PYG{n}{x} \PYG{o}{*} \PYG{n}{center}\PYG{p}{.}\PYG{n}{x} \PYG{o}{+}
+      \PYG{n}{p}\PYG{p}{.}\PYG{n}{y} \PYG{o}{*} \PYG{n}{v}\PYG{p}{.}\PYG{n}{y} \PYG{o}{\PYGZhy{}} \PYG{n}{v}\PYG{p}{.}\PYG{n}{y} \PYG{o}{*} \PYG{n}{center}\PYG{p}{.}\PYG{n}{y} \PYG{o}{+}
+      \PYG{n}{p}\PYG{p}{.}\PYG{n}{z} \PYG{o}{*} \PYG{n}{v}\PYG{p}{.}\PYG{n}{z}\PYG{o}{\PYGZhy{}} \PYG{n}{v}\PYG{p}{.}\PYG{n}{z} \PYG{o}{*} \PYG{n}{center}\PYG{p}{.}\PYG{n}{z}\PYG{p}{);}
+    \PYG{k+kt}{double} \PYG{n}{C} \PYG{o}{=} \PYG{n}{p}\PYG{p}{.}\PYG{n}{x} \PYG{o}{*} \PYG{n}{p}\PYG{p}{.}\PYG{n}{x} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{2} \PYG{o}{*} \PYG{n}{p}\PYG{p}{.}\PYG{n}{x} \PYG{o}{*} \PYG{n}{center}\PYG{p}{.}\PYG{n}{x} \PYG{o}{+} \PYG{n}{center}\PYG{p}{.}\PYG{n}{x} \PYG{o}{*} \PYG{n}{center}\PYG{p}{.}\PYG{n}{x} \PYG{o}{+}
+      \PYG{n}{p}\PYG{p}{.}\PYG{n}{y} \PYG{o}{*} \PYG{n}{p}\PYG{p}{.}\PYG{n}{y} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{2} \PYG{o}{*} \PYG{n}{p}\PYG{p}{.}\PYG{n}{y} \PYG{o}{*} \PYG{n}{center}\PYG{p}{.}\PYG{n}{y} \PYG{o}{+} \PYG{n}{center}\PYG{p}{.}\PYG{n}{y} \PYG{o}{*} \PYG{n}{center}\PYG{p}{.}\PYG{n}{y} \PYG{o}{+}
+      \PYG{n}{p}\PYG{p}{.}\PYG{n}{z} \PYG{o}{*} \PYG{n}{p}\PYG{p}{.}\PYG{n}{z} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{2} \PYG{o}{*} \PYG{n}{p}\PYG{p}{.}\PYG{n}{z} \PYG{o}{*} \PYG{n}{center}\PYG{p}{.}\PYG{n}{z} \PYG{o}{+} \PYG{n}{center}\PYG{p}{.}\PYG{n}{z} \PYG{o}{*} \PYG{n}{center}\PYG{p}{.}\PYG{n}{z} \PYG{o}{\PYGZhy{}}
+      \PYG{n}{radius} \PYG{o}{*} \PYG{n}{radius}\PYG{p}{;}
+    \PYG{k+kt}{double} \PYG{n}{D} \PYG{o}{=} \PYG{n}{B} \PYG{o}{*} \PYG{n}{B} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{4} \PYG{o}{*} \PYG{n}{A} \PYG{o}{*} \PYG{n}{C}\PYG{p}{;} \PYG{c+c1}{// 判別式}
+
+    \PYG{k}{if} \PYG{p}{(}\PYG{n}{D} \PYG{o}{\PYGZgt{}=} \PYG{l+m+mi}{0}\PYG{p}{)} \PYG{p}{\PYGZob{}} \PYG{c+c1}{// 交わる}
+      \PYG{k+kt}{double} \PYG{n}{t1} \PYG{o}{=} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{n}{B} \PYG{o}{\PYGZhy{}} \PYG{n}{sqrt}\PYG{p}{(}\PYG{n}{D}\PYG{p}{))} \PYG{o}{/} \PYG{p}{(}\PYG{l+m+mf}{2.0} \PYG{o}{*} \PYG{n}{A}\PYG{p}{);}
+      \PYG{k+kt}{double} \PYG{n}{t2} \PYG{o}{=} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{n}{B} \PYG{o}{+} \PYG{n}{sqrt}\PYG{p}{(}\PYG{n}{D}\PYG{p}{))} \PYG{o}{/} \PYG{p}{(}\PYG{l+m+mf}{2.0} \PYG{o}{*} \PYG{n}{A}\PYG{p}{);}
+      \PYG{k}{return} \PYG{n}{t1} \PYG{o}{\PYGZlt{}} \PYG{n}{t2} \PYG{o}{?} \PYG{n+nl}{t1} \PYG{p}{:} \PYG{n}{t2}\PYG{p}{;} \PYG{c+c1}{// 小さいほうのtの値を返す}
+    \PYG{p}{\PYGZcb{}} \PYG{k}{else} \PYG{p}{\PYGZob{}} \PYG{c+c1}{// 交わらない}
+      \PYG{k}{return} \PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{1.0}\PYG{p}{;}
+    \PYG{p}{\PYGZcb{}}
+  \PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{};}
+
+
+\PYG{k+kt}{int} \PYG{n}{halfWidth}\PYG{p}{;}    \PYG{c+c1}{// 描画領域の横幅/2}
+\PYG{k+kt}{int} \PYG{n}{halfHeight}\PYG{p}{;}   \PYG{c+c1}{// 描画領域の縦幅/2}
+
+\PYG{c+c1}{// 各種定数}
+\PYG{k+kt}{double} \PYG{n}{d} \PYG{o}{=} \PYG{l+m+mi}{1000}\PYG{p}{;}  \PYG{c+c1}{// 視点と投影面との距離}
+\PYG{k+kt}{double} \PYG{n}{Kd} \PYG{o}{=} \PYG{l+m+mf}{0.8}\PYG{p}{;}  \PYG{c+c1}{// 拡散反射定数}
+\PYG{c+c1}{// double Kd = 0.6;  // 8\PYGZhy{}3\PYGZhy{}8}
+\PYG{c+c1}{// double Kd = 1.0;  // 8\PYGZhy{}3\PYGZhy{}9}
+\PYG{k+kt}{double} \PYG{n}{Ks} \PYG{o}{=} \PYG{l+m+mf}{0.8}\PYG{p}{;}  \PYG{c+c1}{// 鏡面反射定数}
+\PYG{c+c1}{// double Ks = 0.6;  // 8\PYGZhy{}3\PYGZhy{}10}
+\PYG{c+c1}{// double Ks = 1.0;  // 8\PYGZhy{}3\PYGZhy{}11}
+\PYG{c+c1}{// double Ks = 4.0;  // 8\PYGZhy{}3\PYGZhy{}12}
+\PYG{k+kt}{double} \PYG{n}{Iin} \PYG{o}{=} \PYG{l+m+mf}{1.0}\PYG{p}{;} \PYG{c+c1}{// 入射光の強さ}
+\PYG{c+c1}{// double Iin = 0.5; // 8\PYGZhy{}3\PYGZhy{}6}
+\PYG{c+c1}{// double Iin = 2.0; // 8\PYGZhy{}3\PYGZhy{}7}
+\PYG{k+kt}{double} \PYG{n}{Ia}  \PYG{o}{=} \PYG{l+m+mf}{0.2}\PYG{p}{;} \PYG{c+c1}{// 環境光}
+\PYG{c+c1}{// double Ia  = 0.1; // 8\PYGZhy{}3\PYGZhy{}4}
+\PYG{c+c1}{// double Ia  = 0.4; // 8\PYGZhy{}3\PYGZhy{}5}
+
+\PYG{n}{Vector3d} \PYG{n+nf}{viewPosition}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{);} \PYG{c+c1}{// 視点位置}
+\PYG{n}{Vector3d} \PYG{n+nf}{lightDirection}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{2}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{4}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{2}\PYG{p}{);} \PYG{c+c1}{// 入射光の進行方向}
+\PYG{c+c1}{// Vector3d lightDirection(0, \PYGZhy{}4, \PYGZhy{}2); // 8\PYGZhy{}3\PYGZhy{}1}
+\PYG{c+c1}{// Vector3d lightDirection(0, \PYGZhy{}4, \PYGZhy{}2); // 8\PYGZhy{}3\PYGZhy{}2}
+\PYG{c+c1}{// Vector3d lightDirection(\PYGZhy{}2, 0, \PYGZhy{}2); // 8\PYGZhy{}3\PYGZhy{}3}
+
+\PYG{c+c1}{// レンダリングする球体}
+\PYG{n}{Sphere} \PYG{n+nf}{sphere}\PYG{p}{(}\PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1500}\PYG{p}{,} \PYG{c+c1}{// 中心座標}
+        \PYG{l+m+mf}{150.0}\PYG{p}{,}           \PYG{c+c1}{// 半径}
+        \PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mf}{0.9}\PYG{p}{,} \PYG{l+m+mf}{0.9}\PYG{p}{);}  \PYG{c+c1}{// RGB値}
+
+
+\PYG{c+c1}{// 描画を行う}
+\PYG{k+kt}{void} \PYG{n+nf}{display}\PYG{p}{(}\PYG{k+kt}{void}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+
+  \PYG{n}{glClear}\PYG{p}{(}\PYG{n}{GL\PYGZus{}COLOR\PYGZus{}BUFFER\PYGZus{}BIT}\PYG{p}{);} \PYG{c+c1}{// 描画内容のクリア}
+
+  \PYG{c+c1}{// ピクセル単位で描画色を決定するループ処理}
+  \PYG{k}{for}\PYG{p}{(}\PYG{k+kt}{int} \PYG{n}{y} \PYG{o}{=} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{n}{halfHeight}\PYG{p}{);} \PYG{n}{y} \PYG{o}{\PYGZlt{}=} \PYG{n}{halfHeight}\PYG{p}{;} \PYG{n}{y}\PYG{o}{++} \PYG{p}{)} \PYG{p}{\PYGZob{}}
+    \PYG{k}{for}\PYG{p}{(}\PYG{k+kt}{int} \PYG{n}{x} \PYG{o}{=} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{n}{halfWidth}\PYG{p}{);} \PYG{n}{x} \PYG{o}{\PYGZlt{}=} \PYG{n}{halfWidth}\PYG{p}{;} \PYG{n}{x}\PYG{o}{++} \PYG{p}{)} \PYG{p}{\PYGZob{}}
+
+      \PYG{n}{Vector3d} \PYG{n}{ray}\PYG{p}{(}\PYG{n}{x} \PYG{o}{\PYGZhy{}} \PYG{n}{viewPosition}\PYG{p}{.}\PYG{n}{x}\PYG{p}{,} \PYG{n}{y} \PYG{o}{\PYGZhy{}} \PYG{n}{viewPosition}\PYG{p}{.}\PYG{n}{y}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{n}{d} \PYG{o}{\PYGZhy{}} \PYG{n}{viewPosition}\PYG{p}{.}\PYG{n}{z}\PYG{p}{);} \PYG{c+c1}{// 原点からスクリーン上のピクセルへ飛ばすレイの方向}
+      \PYG{n}{ray}\PYG{p}{.}\PYG{n}{normalize}\PYG{p}{();} \PYG{c+c1}{// レイの長さの正規化}
+
+      \PYG{c+c1}{// レイを飛ばして球との交点を求める}
+      \PYG{k+kt}{double} \PYG{n}{t} \PYG{o}{=} \PYG{n}{sphere}\PYG{p}{.}\PYG{n}{getIntersec}\PYG{p}{(}\PYG{n}{viewPosition}\PYG{p}{,} \PYG{n}{ray}\PYG{p}{);}
+
+      \PYG{k}{if}\PYG{p}{(}\PYG{n}{t} \PYG{o}{\PYGZgt{}} \PYG{l+m+mi}{0}\PYG{p}{)} \PYG{p}{\PYGZob{}} \PYG{c+c1}{// 交点がある}
+        \PYG{k+kt}{double} \PYG{n}{Is} \PYG{o}{=} \PYG{l+m+mi}{0}\PYG{p}{;} \PYG{c+c1}{// 鏡面反射光}
+        \PYG{k+kt}{double} \PYG{n}{Id} \PYG{o}{=} \PYG{l+m+mi}{0}\PYG{p}{;} \PYG{c+c1}{// 拡散反射光}
+        \PYG{c+c1}{// \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+        \PYG{c+c1}{// ★ここで Is および Id の値を計算する}
+        \PYG{k+kt}{int} \PYG{n}{flag} \PYG{o}{=} \PYG{l+m+mi}{1}\PYG{p}{;} \PYG{c+c1}{// 0: 拡散反射光 \PYGZlt{}=\PYGZgt{} 1: 鏡面反射光}
+        \PYG{n}{Vector3d} \PYG{n}{P} \PYG{o}{=} \PYG{n}{viewPosition} \PYG{o}{+} \PYG{n}{t} \PYG{o}{*} \PYG{n}{ray}\PYG{p}{;}
+        \PYG{n}{Vector3d} \PYG{n}{N} \PYG{o}{=} \PYG{n}{P} \PYG{o}{\PYGZhy{}} \PYG{n}{sphere}\PYG{p}{.}\PYG{n}{center}\PYG{p}{;}
+        \PYG{n}{N}\PYG{p}{.}\PYG{n}{normalize}\PYG{p}{();}
+        \PYG{k}{if} \PYG{p}{(}\PYG{n}{flag} \PYG{o}{\PYGZgt{}=} \PYG{l+m+mi}{0}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+          \PYG{k+kt}{double} \PYG{n}{cos\PYGZus{}Id} \PYG{o}{=} \PYG{n}{N} \PYG{o}{*} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1} \PYG{o}{*} \PYG{n}{lightDirection}\PYG{p}{);}
+          \PYG{k}{if}\PYG{p}{(}\PYG{n}{cos\PYGZus{}Id} \PYG{o}{\PYGZgt{}} \PYG{l+m+mi}{0}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+            \PYG{n}{Id} \PYG{o}{=} \PYG{n}{Iin} \PYG{o}{*} \PYG{n}{Kd} \PYG{o}{*} \PYG{n}{cos\PYGZus{}Id}\PYG{p}{;}
+          \PYG{p}{\PYGZcb{}}
+        \PYG{p}{\PYGZcb{}} \PYG{k}{if}\PYG{p}{(}\PYG{n}{flag} \PYG{o}{\PYGZgt{}=} \PYG{l+m+mi}{1}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+          \PYG{k+kt}{int} \PYG{n}{n} \PYG{o}{=} \PYG{l+m+mi}{20}\PYG{p}{;}
+          \PYG{c+c1}{// int n = 2; // 8\PYGZhy{}3\PYGZhy{}13}
+          \PYG{c+c1}{// int n = 40; // 8\PYGZhy{}3\PYGZhy{}14}
+          \PYG{k+kt}{double} \PYG{n}{a} \PYG{o}{=} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1} \PYG{o}{*} \PYG{p}{(}\PYG{n}{lightDirection} \PYG{o}{*} \PYG{n}{N}\PYG{p}{);}
+          \PYG{n}{Vector3d} \PYG{n}{R} \PYG{o}{=} \PYG{n}{lightDirection} \PYG{o}{+} \PYG{l+m+mi}{2} \PYG{o}{*} \PYG{n}{a} \PYG{o}{*} \PYG{n}{N}\PYG{p}{;}
+          \PYG{n}{Vector3d} \PYG{n}{V} \PYG{o}{=} \PYG{n}{P} \PYG{o}{\PYGZhy{}} \PYG{n}{viewPosition}\PYG{p}{;}
+          \PYG{n}{R}\PYG{p}{.}\PYG{n}{normalize}\PYG{p}{();}
+          \PYG{n}{V}\PYG{p}{.}\PYG{n}{normalize}\PYG{p}{();}
+          \PYG{k+kt}{double} \PYG{n}{cos\PYGZus{}Is} \PYG{o}{=} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1} \PYG{o}{*} \PYG{n}{R} \PYG{o}{*} \PYG{n}{V}\PYG{p}{;}
+          \PYG{k}{if} \PYG{p}{(}\PYG{n}{cos\PYGZus{}Is} \PYG{o}{\PYGZgt{}} \PYG{l+m+mi}{0}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+            \PYG{n}{Is} \PYG{o}{=} \PYG{n}{Iin} \PYG{o}{*} \PYG{n}{Ks} \PYG{o}{*} \PYG{n}{pow}\PYG{p}{(}\PYG{n}{cos\PYGZus{}Is}\PYG{p}{,} \PYG{n}{n}\PYG{p}{);}
+          \PYG{p}{\PYGZcb{}}
+        \PYG{p}{\PYGZcb{}}
+        \PYG{c+c1}{// \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+        \PYG{k+kt}{double} \PYG{n}{I} \PYG{o}{=} \PYG{n}{Id} \PYG{o}{+} \PYG{n}{Is} \PYG{o}{+} \PYG{n}{Ia}\PYG{p}{;}
+        \PYG{k+kt}{double} \PYG{n}{r} \PYG{o}{=} \PYG{n}{std}\PYG{o}{::}\PYG{n}{min}\PYG{p}{(}\PYG{n}{I} \PYG{o}{*} \PYG{n}{sphere}\PYG{p}{.}\PYG{n}{cR}\PYG{p}{,} \PYG{l+m+mf}{1.0}\PYG{p}{);} \PYG{c+c1}{// 1.0 を超えないようにする}
+        \PYG{k+kt}{double} \PYG{n}{g} \PYG{o}{=} \PYG{n}{std}\PYG{o}{::}\PYG{n}{min}\PYG{p}{(}\PYG{n}{I} \PYG{o}{*} \PYG{n}{sphere}\PYG{p}{.}\PYG{n}{cG}\PYG{p}{,} \PYG{l+m+mf}{1.0}\PYG{p}{);} \PYG{c+c1}{// 1.0 を超えないようにする}
+        \PYG{k+kt}{double} \PYG{n}{b} \PYG{o}{=} \PYG{n}{std}\PYG{o}{::}\PYG{n}{min}\PYG{p}{(}\PYG{n}{I} \PYG{o}{*} \PYG{n}{sphere}\PYG{p}{.}\PYG{n}{cB}\PYG{p}{,} \PYG{l+m+mf}{1.0}\PYG{p}{);} \PYG{c+c1}{// 1.0 を超えないようにする}
+
+        \PYG{c+c1}{// 描画色の設定}
+        \PYG{n}{glColor3d}\PYG{p}{(}\PYG{n}{r}\PYG{p}{,} \PYG{n}{g}\PYG{p}{,} \PYG{n}{b}\PYG{p}{);}
+
+      \PYG{p}{\PYGZcb{}} \PYG{k}{else} \PYG{p}{\PYGZob{}} \PYG{c+c1}{// 交点が無い}
+
+        \PYG{c+c1}{// 描画色を黒にする}
+        \PYG{n}{glColor3f}\PYG{p}{(}\PYG{l+m+mf}{0.0f}\PYG{p}{,} \PYG{l+m+mf}{0.0f}\PYG{p}{,} \PYG{l+m+mf}{0.0f}\PYG{p}{);}
+      \PYG{p}{\PYGZcb{}}
+
+      \PYG{c+c1}{// (x, y) の画素を描画}
+      \PYG{n}{glBegin}\PYG{p}{(}\PYG{n}{GL\PYGZus{}POINTS}\PYG{p}{);}
+      \PYG{n}{glVertex2i}\PYG{p}{(}\PYG{n}{x}\PYG{p}{,} \PYG{n}{y}\PYG{p}{);}
+      \PYG{n}{glEnd}\PYG{p}{();}
+    \PYG{p}{\PYGZcb{}}
+  \PYG{p}{\PYGZcb{}}
+  \PYG{n}{glFlush}\PYG{p}{();}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kt}{void} \PYG{n+nf}{resize}\PYG{p}{(}\PYG{k+kt}{int} \PYG{n}{w}\PYG{p}{,} \PYG{k+kt}{int} \PYG{n}{h}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+  \PYG{k}{if} \PYG{p}{(}\PYG{n}{h} \PYG{o}{\PYGZlt{}} \PYG{l+m+mi}{1}\PYG{p}{)} \PYG{k}{return}\PYG{p}{;}
+  \PYG{n}{glViewport}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{w}\PYG{p}{,} \PYG{n}{h}\PYG{p}{);}
+  \PYG{n}{halfWidth} \PYG{o}{=} \PYG{n}{w}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{p}{;}
+  \PYG{n}{halfHeight} \PYG{o}{=} \PYG{n}{h}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{p}{;}
+  \PYG{n}{glMatrixMode}\PYG{p}{(}\PYG{n}{GL\PYGZus{}PROJECTION}\PYG{p}{);}
+  \PYG{n}{glLoadIdentity}\PYG{p}{();}
+
+  \PYG{c+c1}{// ウィンドウ内の座標系設定}
+  \PYG{n}{glOrtho}\PYG{p}{(} \PYG{o}{\PYGZhy{}}\PYG{n}{halfWidth}\PYG{p}{,} \PYG{n}{halfWidth}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{n}{halfHeight}\PYG{p}{,} \PYG{n}{halfHeight}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{1.0}\PYG{p}{);}
+  \PYG{n}{glMatrixMode}\PYG{p}{(}\PYG{n}{GL\PYGZus{}MODELVIEW}\PYG{p}{);}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kt}{void} \PYG{n+nf}{keyboard}\PYG{p}{(}\PYG{k+kt}{unsigned} \PYG{k+kt}{char} \PYG{n}{key}\PYG{p}{,} \PYG{k+kt}{int} \PYG{n}{x}\PYG{p}{,} \PYG{k+kt}{int} \PYG{n}{y}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+  \PYG{k}{switch} \PYG{p}{(}\PYG{n}{key}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+    \PYG{k}{case} \PYG{l+m+mi}{27}\PYG{o}{:} \PYG{n}{exit}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{);}  \PYG{c+cm}{/* ESC code */}
+  \PYG{p}{\PYGZcb{}}
+  \PYG{n}{glutPostRedisplay}\PYG{p}{();}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kt}{int} \PYG{n+nf}{main}\PYG{p}{(}\PYG{k+kt}{int} \PYG{n}{argc}\PYG{p}{,} \PYG{k+kt}{char}\PYG{o}{**} \PYG{n}{argv}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+  \PYG{n}{lightDirection}\PYG{p}{.}\PYG{n}{normalize}\PYG{p}{();}
+
+  \PYG{n}{glutInit}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{argc}\PYG{p}{,} \PYG{n}{argv}\PYG{p}{);}
+  \PYG{n}{glutInitDisplayMode}\PYG{p}{(}\PYG{n}{GLUT\PYGZus{}SINGLE} \PYG{o}{|} \PYG{n}{GLUT\PYGZus{}RGB}\PYG{p}{);}
+  \PYG{n}{glutInitWindowSize}\PYG{p}{(}\PYG{l+m+mi}{400}\PYG{p}{,}\PYG{l+m+mi}{400}\PYG{p}{);}
+  \PYG{n}{glutCreateWindow}\PYG{p}{(}\PYG{n}{argv}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]);}
+  \PYG{n}{glClearColor}\PYG{p}{(}\PYG{l+m+mf}{1.0}\PYG{p}{,} \PYG{l+m+mf}{1.0}\PYG{p}{,} \PYG{l+m+mf}{1.0}\PYG{p}{,} \PYG{l+m+mf}{1.0}\PYG{p}{);}
+  \PYG{n}{glShadeModel}\PYG{p}{(}\PYG{n}{GL\PYGZus{}FLAT}\PYG{p}{);}
+
+  \PYG{n}{glutDisplayFunc}\PYG{p}{(}\PYG{n}{display}\PYG{p}{);}
+  \PYG{n}{glutReshapeFunc}\PYG{p}{(}\PYG{n}{resize}\PYG{p}{);}
+  \PYG{n}{glutKeyboardFunc}\PYG{p}{(}\PYG{n}{keyboard}\PYG{p}{);}
+  \PYG{n}{glutMainLoop}\PYG{p}{();}
+
+  \PYG{k}{return} \PYG{l+m+mi}{0}\PYG{p}{;}
+
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}
