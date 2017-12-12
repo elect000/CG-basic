@@ -2,16 +2,9 @@
 \documentclass{scrartcl}
 		\usepackage[utf8]{inputenc}
 		\usepackage[dvipdfmx]{graphicx}
-		\usepackage[dvipdfmx]{color}
 		\usepackage[backend=biber,bibencoding=utf8]{biblatex}
 		\usepackage{url}
 		\usepackage{indentfirst}
-		\usepackage[normalem]{ulem}
-		\usepackage{longtable}
-		\usepackage{minted}
-		\usepackage{fancyvrb}
-    \usepackage[dvipdfmx,colorlinks=false,pdfborder={0 0 0}]{hyperref}
-    \usepackage{pxjahyper}
 		\bibliography{reference}
 \author{情報科学類二年 江畑 拓哉(201611350)}
 \date{}
@@ -21,7 +14,7 @@
 \maketitle
 
 \section{動作環境の説明}
-\label{sec:orgf7c52f6}
+\label{sec:org100cc06}
 \begin{itemize}
 \item OS\\
 Manjaro Linux 17.0.6 Gellivara\\
@@ -32,9 +25,9 @@ Copyright (C) 2017 Free Software Foundation, Inc.\\
 Spacemacs 0.200.9 (Emacs25.3.1)\\
 \end{itemize}
 \section{ソースコード}
-\label{sec:org3c74b9a}
+\label{sec:orgedeff83}
 　はじめに今回の課題で用いたソースコードを示す。変数flagなどを変更することでそれぞれの課題の実行が行われている。\\
-\begin{minted}[frame=lines,linenos=true,obeytabs,tabsize=4]{c++}
+\begin{minted}[frame=lines,linenos=true]{c++}
 #include <GL/glut.h>
 #include <math.h>
 #include <stdlib.h>
@@ -276,99 +269,99 @@ int main(int argc, char** argv) {
 }
 \end{minted}
 \section{課題1}
-\label{sec:orgbd2788f}
+\label{sec:org4d88458}
 153行目の変数flagを0にすることで実行可能である。\\
 \begin{center}
 \includegraphics[width=6cm]{/home/elect/Pictures/8-1.png}
 \end{center}
 \section{課題2}
-\label{sec:orgd1467d8}
+\label{sec:orgbdcf604}
 153行目の変数flagを1にすることで実行可能である。\\
 \begin{center}
 \includegraphics[width=6cm]{/home/elect/Pictures/8-2.png}
 \end{center}
 \section{課題3}
-\label{sec:org1903e3a}
+\label{sec:orgc44da04}
 \subsection{1}
-\label{sec:org20570dc}
+\label{sec:org1a4500f}
 125行目 \texttt{Vector3d lightDirection(0, 0, -2); // 8-3-1} を有効にした場合、入射光が手前からのものになった。\\
 \begin{center}
 \includegraphics[width=6cm]{/home/elect/Pictures/8-3-1.png}
 \end{center}
 \subsection{2}
-\label{sec:orgcbde6ef}
+\label{sec:orgdc10422}
 126行目 \texttt{Vector3d lightDirection(0, -4, -2); // 8-3-2} を有効にした場合、入射光が上からのものになった。\\
 \begin{center}
 \includegraphics[width=6cm]{/home/elect/Pictures/8-3-2.png}
 \end{center}
 \subsection{3}
-\label{sec:orgd2c241b}
+\label{sec:orgc103b08}
 127行目 \texttt{Vector3d lightDirection(-2, 0, -2); // 8-3-3} を有効にした場合、入射光が右からのものになった。\\
 \begin{center}
 \includegraphics[width=6cm]{/home/elect/Pictures/8-3-3.png}
 \end{center}
 \subsection{4}
-\label{sec:orge8bdaa5}
+\label{sec:org8f8b637}
 120行目 \texttt{double Ia  = 0.1; // 8-3-4} を有効にした場合、全体的に暗くなった。\\
 \begin{center}
 \includegraphics[width=6cm]{/home/elect/Pictures/8-3-4.png}
 \end{center}
 \subsection{5}
-\label{sec:orgf332c6b}
+\label{sec:org747fea3}
 121行目 \texttt{double Ia  = 0.4; // 8-3-5} を有効にした場合、全体的に明るくなった。\\
 \begin{center}
 \includegraphics[width=6cm]{/home/elect/Pictures/8-3-5.png}
 \end{center}
 \subsection{6}
-\label{sec:org7d58922}
+\label{sec:org7103a06}
 117行目 \texttt{double Iin = 0.5; // 8-3-6} を有効にした場合、全体的に暗くなった。(入射光が暗くなったが、影も当然暗いため全体的に暗く感じた)\\
 \begin{center}
 \includegraphics[width=6cm]{/home/elect/Pictures/8-3-6.png}
 \end{center}
 \subsection{7}
-\label{sec:orgcd44449}
+\label{sec:org5f16c2b}
 118行目 \texttt{double Iin = 2.0; // 8-3-6} を有効にした場合、入射光が強くなった。\\
 \begin{center}
 \includegraphics[width=6cm]{/home/elect/Pictures/8-3-7.png}
 \end{center}
 \subsection{8}
-\label{sec:orgb3f828f}
+\label{sec:orgbdc51eb}
 110行目 \texttt{double Kd = 0.6;  // 8-3-8} を有効にした場合、鏡面部分を除いて暗くなった。\\
 \begin{center}
 \includegraphics[width=6cm]{/home/elect/Pictures/8-3-8.png}
 \end{center}
 \subsection{9}
-\label{sec:org9fd1e70}
+\label{sec:orgb76d250}
 111行目 \texttt{double Kd = 1.0;  // 8-3-9} を有効にした場合、鏡面部分を除いて明るくなった。\\
 \begin{center}
 \includegraphics[width=6cm]{/home/elect/Pictures/8-3-9.png}
 \end{center}
 \subsection{10}
-\label{sec:orgc4de23f}
+\label{sec:orge9424cc}
 113行目 \texttt{double Ks = 0.6;  // 8-3-10} を有効にした場合、鏡面部分がほんのり暗くなった。\\
 \begin{center}
 \includegraphics[width=6cm]{/home/elect/Pictures/8-3-10.png}
 \end{center}
 \subsection{11}
-\label{sec:org4f11839}
+\label{sec:org49b7fb8}
 114行目 \texttt{double Ks = 1.0;  // 8-3-11} を有効にした場合、鏡面部分がほんのり明るくなった。\\
 \begin{center}
 \includegraphics[width=6cm]{/home/elect/Pictures/8-3-11.png}
 \end{center}
 \subsection{12}
-\label{sec:orgc818898}
+\label{sec:org8063546}
 上の変化が少なかったため、追加した。115行目 \texttt{double Ks = 4.0;  // 8-3-12} を有効にした場合、鏡面部分がはっきり明るくなった。\\
 \begin{center}
 \includegraphics[width=6cm]{/home/elect/Pictures/8-3-12.png}
 \end{center}
 \subsection{13}
-\label{sec:orgfb20a66}
+\label{sec:orgce57054}
 166行目 \texttt{int n = 2; // 8-3-13} を有効にした場合、鏡面部分が潰れてぼやけて見えた。\\
 \begin{center}
 \includegraphics[width=6cm]{/home/elect/Pictures/8-3-13.png}
 \end{center}
 \subsection{14}
-\label{sec:orgf48208c}
+\label{sec:org1e617ea}
 167行目 \texttt{int n = 40; // 8-3-14} を有効にした場合、鏡面部分が鋭くはっきりと見えた。\\
 \begin{center}
 \includegraphics[width=6cm]{/home/elect/Pictures/8-3-14.png}
