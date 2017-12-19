@@ -59,7 +59,6 @@ public:
 #define POINT_NUM 20
 // #define POINT_NUM 40
 // #define POINT_NUM 60
-// #define POINT_NUM 80
 // ------------------------------------------------
 
 // 布の定義
@@ -127,14 +126,14 @@ double dT = 1; // 時間刻み幅
 double Dk = 0.1; // 速度に比例して、逆向きにはたらく抵抗係数
 Vector3d gravity(0, -0.002, 0); // 重力(y軸方向の負の向きに働く)
 // double Ks = 4;
-// double Ks = 16;
-// double Mass = 15;
-// double Mass = 60;
+// double Ks = 10;
+// double Mass = 25;
+// double Mass = 35;
 // double dT = 0.5;
-// double dT = 2.0;
+// double dT = 1.2;
 // double Dk = 0.05;
 // double Dk = 0.2;
-// Vector3d gravity(0, -0.001, 0
+// Vector3d gravity(0, -0.001, 0);
 // Vector3d gravity(0, -0.004, 0);
 // -------------------------------------------------------------------------
 
