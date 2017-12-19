@@ -32,6 +32,34 @@ Vector3d operator*( const double& k, const Vector3d& v ) { return( Vector3d( k*v
 Vector3d operator*( const Vector3d& v, const double& k ) { return( Vector3d( v.x*k, v.y*k, v.z*k ) );}
 Vector3d operator/( const Vector3d& v, const double& k ) { return( Vector3d( v.x/k, v.y/k, v.z/k ) );}
 
+// ------------------------------------------------------
+// 球体
+class Sphere {
+public:
+  Vector3d center; // 中心座標
+  double radius;   // 半径
+
+  Sphere(double x, double y, double z, double r) {
+    center.x = x;
+    center.y = y;
+    center.z = z;
+    radius = r;
+  }
+  void display() { 
+		glPushMatrix(); // 現在のモデル変換行列を退避しておく
+    glColor3f(0.1,0.1,0.1);
+		// 座標の平行移動とスケール変換を施して球体を描画する
+    glTranslated(center.x, center.y, center.z);
+		glScaled(1, 1, 1);
+    glRotated(90, 1.0, 0.0, 0.0);
+		glutWireSphere(radius, 32, 32);
+		
+		glPopMatrix();  // 退避していたモデル変換行列を戻す
+	}
+};
+double radius = 4.0;
+Sphere sphere = Sphere(0, 0, 0, radius);
+// ------------------------------------------------------
 // 質点
 class Point {
 public:
@@ -55,12 +83,7 @@ public:
 	}
 };
 
-// ------------------------------------------------
 #define POINT_NUM 20
-// #define POINT_NUM 40
-// #define POINT_NUM 60
-// #define POINT_NUM 80
-// ------------------------------------------------
 
 // 布の定義
 class Cloth {
@@ -80,7 +103,6 @@ public:
         // --------------------------------------------------------------
 			}
 		}
-
 		// バネの設定
 		for(int y = 0; y < POINT_NUM; y++) {
 			for(int x = 0; x < POINT_NUM; x++) {
@@ -88,17 +110,14 @@ public:
 				if(x < POINT_NUM - 1) {				
 					springs.push_back(new Spring(&points[x][y], &points[x+1][y]));
 				}
-
 				// 縦方向のバネ
 				if(y < POINT_NUM -1) {
 					springs.push_back(new Spring(&points[x][y], &points[x][y+1]));
 				}
-
 				// 右下方向のバネ
 				if(x < POINT_NUM - 1 && y < POINT_NUM - 1) {				
 					springs.push_back(new Spring(&points[x][y], &points[x+1][y+1]));
 				}
-
 				// 左下方向のバネ
 				if(x > 0 && y < POINT_NUM - 1) {				
 					springs.push_back(new Spring(&points[x][y], &points[x-1][y+1]));
@@ -120,23 +139,11 @@ int preMousePositionX;   // マウスカーソルの位置を記憶しておく変数
 int preMousePositionY;   // マウスカーソルの位置を記憶しておく変数
 bool bRunning; // アニメーションの実行/停止を切り替えるフラグ
 
-// -------------------------------------------------------------------------
 double Ks = 8;   // バネ定数
 double Mass = 30; // 質点の質量
 double dT = 1; // 時間刻み幅
 double Dk = 0.1; // 速度に比例して、逆向きにはたらく抵抗係数
 Vector3d gravity(0, -0.002, 0); // 重力(y軸方向の負の向きに働く)
-// double Ks = 4;
-// double Ks = 16;
-// double Mass = 15;
-// double Mass = 60;
-// double dT = 0.5;
-// double dT = 2.0;
-// double Dk = 0.05;
-// double Dk = 0.2;
-// Vector3d gravity(0, -0.001, 0
-// Vector3d gravity(0, -0.004, 0);
-// -------------------------------------------------------------------------
 
 void drawCloth(void) {
 
@@ -168,6 +175,7 @@ void display(void) {
 	glTranslated(0, 0.0, -50);
 	glRotated(rotateAngleV_deg, 1.0, 0.0, 0.0);
 	glRotated(rotateAngleH_deg, 0.0, 1.0, 0.0);
+  sphere.display();
 	drawCloth();
 
 	glFlush();
@@ -212,6 +220,7 @@ void updateCloth(void) {
 	// 2. 質点の加速度を求める
 	// 3. 質点の速度を更新する
 	// 4. 質点の位置を更新する
+
 	//1-1. 質点に働く力をリセット
 	// 全ての質点について順番に処理する
 	for(int y = 0; y < POINT_NUM; y++) {
@@ -267,14 +276,18 @@ void updateCloth(void) {
 	for(int y = 0; y < POINT_NUM; y++) {
 		for(int x = 0; x < POINT_NUM; x++) {
 			// 頂点が固定されている場合は何もしない
-			if(cloth->points[x][y].bFixed) continue;			
+			// if(cloth->points[x][y].bFixed) continue;			
 			// 2. 質点の加速度（ベクトル）を計算 (力ベクトル cloth->points[x][y].f を質量で割った値)
       Vector3d acceralation = cloth->points[x][y].f / Mass;
 			// 3. 質点の速度 (cloth->points[x][y].v) を加速度に基づいて更新する
       cloth->points[x][y].v += acceralation * dT;
 			// 4. 質点の位置 (cloth->points[x][y].p) を速度に基づいて更新する
-			cloth->points[x][y].p += cloth->points[x][y].v * dT;
+      cloth->points[x][y].p += cloth->points[x][y].v * dT;
 			// オプション. 球体の内部に入るようなら、強制的に外に移動させる
+      if (cloth->points[x][y].p.length() < radius) {
+        cloth->points[x][y].p -= cloth->points[x][y].v * dT;
+        cloth->points[x][y].v = Vector3d(0,0,0);
+      }
 		}
 	}
 }
